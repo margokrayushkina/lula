@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LULA - Le ou la ? C’est du gâteau.</title>
+    <title>LULA - A1 French Gender Trainer</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -67,9 +67,20 @@
         .red-icon { background: #fee2e2; color: var(--red); }
         
         .btn-text h3 { margin: 0; font-size: 20px; font-weight: 800; }
-        .btn-text p { margin: 4px 0 0; color: #64748b; font-size: 14px; line-height: 1.4; }
 
-        .badge { background: #e2e8f0; padding: 6px 24px; border-radius: 20px; font-weight: 900; font-size: 14px; color: #64748b; letter-spacing: 2px; margin-top: 20px; }
+        /* --- Cloud Settings Modal --- */
+        .settings-box {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+        }
+        .settings-title { font-weight: 800; margin-bottom: 20px; text-align: center; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .setting-row select { padding: 8px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600; width: 100px; }
 
         /* --- Game Header --- */
         .game-header { position: absolute; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); z-index: 50; border-bottom: 1px solid #e2e8f0; }
@@ -96,15 +107,30 @@
         .la-btn { background: var(--red); }
 
         /* --- Cloud Game --- */
-        .cloud-container { flex-grow: 1; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 12px; padding: 80px 20px 25vh; overflow-y: auto; width: 100%; }
-        .cloud-word { background: white; border: 2px solid #e2e8f0; padding: 12px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; cursor: pointer; user-select: none; transition: all 0.2s; }
+        .cloud-container { flex-grow: 1; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 10px; padding: 80px 20px 25vh; overflow-y: auto; width: 100%; }
+        .cloud-word { background: white; border: 2px solid #e2e8f0; padding: 10px 16px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none; transition: all 0.2s; }
         
-        .cloud-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 22vh; background: #e2e8f0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-        .drop-zone { border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; color: rgba(0,0,0,0.2); border: 3px dashed rgba(0,0,0,0.1); cursor: pointer; }
+        .cloud-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 20vh; background: #f1f5f9; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; border-top: 1px solid #e2e8f0; }
+        .drop-zone { border-radius: 20px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; cursor: pointer; }
         .zone-le { background: #dbeafe; color: var(--blue); }
         .zone-la { background: #fee2e2; color: var(--red); }
 
-        /* --- Modal --- */
+        .finir-btn {
+            position: absolute;
+            bottom: 22vh;
+            right: 20px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #64748b;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* --- Modals --- */
         .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .modal-content { background: white; border-radius: 35px; overflow-y: auto; max-height: 90vh; max-width: 450px; width: 100%; }
         .modal-header { padding: 20px; color: white; font-weight: 900; font-size: 24px; text-align: center; }
@@ -112,13 +138,12 @@
         .modal-word { font-size: 42px; font-weight: 900; color: #0f172a; display: block; text-align: center; }
         .modal-trans { font-size: 20px; color: #64748b; font-style: italic; display: block; text-align: center; margin-bottom: 25px; }
         .modal-rule { background: #f0f9ff; padding: 15px; border-radius: 18px; color: #0369a1; font-size: 15px; font-weight: 600; margin-bottom: 20px; }
-        .colloc-item { background: #f8fafc; padding: 10px 15px; border-radius: 12px; font-size: 14px; color: #475569; border: 1px solid #f1f5f9; margin-bottom: 8px; }
+        .colloc-item { background: #f8fafc; padding: 8px 12px; border-radius: 10px; font-size: 13px; color: #475569; border: 1px solid #f1f5f9; margin-bottom: 6px; }
 
         .correct { background: #22c55e; }
         .wrong { background: #ef4444; }
-
-        #timer { font-weight: 900; font-size: 24px; color: var(--primary); }
         .back-btn { background: #f1f5f9; border: none; width: 44px; height: 44px; border-radius: 14px; cursor: pointer; }
+        #timer { font-weight: 900; font-size: 24px; }
     </style>
 </head>
 <body>
@@ -132,21 +157,42 @@
         
         <button class="btn" onclick="startBasic()">
             <div class="btn-icon blue-icon">▶</div>
-            <div class="btn-text">
-                <h3>LULA Basic</h3>
-                <p>По одному слову. Без спешки.</p>
-            </div>
+            <div class="btn-text"><h3>LULA Basic</h3></div>
         </button>
 
-        <button class="btn" onclick="startCloud()">
+        <button class="btn" onclick="openCloudSettings()">
             <div class="btn-icon red-icon">☁</div>
-            <div class="btn-text">
-                <h3>LULA Cloud</h3>
-                <p>Облако слов на время. Распредели их все!</p>
-            </div>
+            <div class="btn-text"><h3>LULA Cloud</h3></div>
         </button>
+    </div>
 
-        <div class="badge">A1 - Full List</div>
+    <!-- CLOUD SETTINGS -->
+    <div id="cloud-settings-screen" class="screen">
+        <div class="settings-box">
+            <h2 class="settings-title">Config Cloud</h2>
+            <div class="setting-row">
+                <span>Mots:</span>
+                <select id="cloud-word-count">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <span>Temps (s):</span>
+                <select id="cloud-timer-val">
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="30" selected>30</option>
+                    <option value="45">45</option>
+                </select>
+            </div>
+            <button class="choice-btn le-btn" style="width:100%; font-size:18px;" onclick="startCloud()">START</button>
+            <button onclick="exitGame()" style="width:100%; background:none; border:none; margin-top:15px; cursor:pointer; color:#64748b;">Retour</button>
+        </div>
     </div>
 
     <!-- BASIC GAME SCREEN -->
@@ -174,100 +220,125 @@
             <div style="width: 44px"></div>
         </div>
         <div id="cloud-container" class="cloud-container"></div>
+        <button class="finir-btn" onclick="exitGame()">Finir plus tôt</button>
         <div class="cloud-footer">
-            <div class="drop-zone zone-le" id="drop-le" onclick="handleCloudChoice('m')">LE</div>
-            <div class="drop-zone zone-la" id="drop-la" onclick="handleCloudChoice('f')">LA</div>
+            <div class="drop-zone zone-le" onclick="handleCloudChoice('m')">LE</div>
+            <div class="drop-zone zone-la" onclick="handleCloudChoice('f')">LA</div>
         </div>
     </div>
 
     <!-- FEEDBACK MODAL -->
     <div id="feedback-modal" class="modal">
         <div class="modal-content">
-            <div id="modal-header" class="modal-header">Correct!</div>
+            <div id="modal-header" class="modal-header">...</div>
             <div class="modal-body">
                 <span id="modal-word" class="modal-word">...</span>
                 <span id="modal-trans" class="modal-trans">...</span>
                 <div id="modal-rule" class="modal-rule">...</div>
                 <div id="modal-collocs"></div>
-                <button class="modal-btn" style="width:100%; padding:20px; border-radius:15px; background:var(--primary); color:white; border:none; font-weight:900; margin-top:20px;" onclick="nextWord()">ДАЛЕЕ</button>
+                <button style="width:100%; padding:20px; border-radius:15px; background:var(--primary); color:white; border:none; font-weight:900; margin-top:20px; cursor:pointer;" onclick="nextWord()">CONTINUER</button>
             </div>
         </div>
     </div>
 
     <script>
         const allWords = [
-            // ЛЮДИ И СЕМЬЯ
-            { word: "homme", article: "un", full: "un homme", gender: "m", rule: "По значению: мужчина", translation: "мужчина", topic: "Люди", collocs: ["un homme gentil", "parler à un homme", "homme de 30 ans", "avec un homme"] },
-            { word: "femme", article: "une", full: "une femme", gender: "f", rule: "По значению: женщина", translation: "женщина", topic: "Люди", collocs: ["une femme sympa", "parler à une femme", "femme de mon ami", "avec une femme"] },
-            { word: "enfant", article: "un", full: "un enfant", gender: "m", rule: "По значению чаще м.р.", translation: "ребенок", topic: "Люди", collocs: ["un enfant calme", "jouer avec un enfant", "parler à un enfant", "enfant de 8 ans"] },
-            { word: "ami", article: "un", full: "un ami", gender: "m", rule: "По значению: мужчина", translation: "друг", topic: "Люди", collocs: ["un ami proche", "parler à un ami", "ami de класс", "с моим другом"] },
-            { word: "amie", article: "une", full: "une amie", gender: "f", rule: "По значению: женщина", translation: "подруга", topic: "Люди", collocs: ["une amie proche", "parler à une amie", "подруга моей сестры", "с моей подругой"] },
-            { word: "famille", article: "la", full: "la famille", gender: "f", rule: "Окончание -ille → ж.р.", translation: "семья", topic: "Семья", collocs: ["ma famille", "famille nombreuse", "avec ma famille", "dans la famille"] },
-            { word: "père", article: "le", full: "le père", gender: "m", rule: "По значению: отец", translation: "отец", topic: "Семья", collocs: ["mon père", "père de famille", "parler à mon père", "avec mon père"] },
-            { word: "mère", article: "la", full: "la mère", gender: "f", rule: "По значению: мать", translation: "мать", topic: "Семья", collocs: ["ma mère", "mère de famille", "parler à ma mère", "avec ma mère"] },
-            { word: "frère", article: "le", full: "le frère", gender: "m", rule: "По значению: брат", translation: "брат", topic: "Семья", collocs: ["mon frère", "frère de Paul", "parler à mon frère"] },
-            { word: "sœur", article: "la", full: "la sœur", gender: "f", rule: "По значению: сестра", translation: "сестра", topic: "Семья", collocs: ["ma sœur", "sœur de Paul", "parler à ma sœur"] },
+            // --- ЛЮДИ И СЕМЬЯ ---
+            { word: "homme", article: "un", full: "un homme", gender: "m", rule: "По значению: мужчина", translation: "мужчина", topic: "Gens", collocs: ["un homme gentil", "parler à un homme", "homme de 30 ans", "avec un homme"] },
+            { word: "femme", article: "une", full: "une femme", gender: "f", rule: "По значению: женщина", translation: "женщина", topic: "Gens", collocs: ["une femme sympa", "parler à une femme", "femme de mon ami", "avec une femme"] },
+            { word: "enfant", article: "un", full: "un enfant", gender: "m", rule: "По значению (общ.), чаще м.р.", translation: "ребенок", topic: "Gens", collocs: ["un enfant calme", "enfant de 8 ans", "jouer avec un enfant", "parler à un enfant"] },
+            { word: "ami", article: "un", full: "un ami", gender: "m", rule: "Мужской пол", translation: "друг", topic: "Gens", collocs: ["un ami proche", "parler à un ami", "ami de classe", "chercher un ami"] },
+            { word: "amie", article: "une", full: "une amie", gender: "f", rule: "Женский пол", translation: "подруга", topic: "Gens", collocs: ["une amie proche", "parler à une amie", "amie d'enfance", "avec une amie"] },
+            { word: "père", article: "le", full: "le père", gender: "m", rule: "По значению: отец", translation: "отец", topic: "Famille", collocs: ["mon père", "père de famille", "parler au père", "chez mon père"] },
+            { word: "mère", article: "la", full: "la mère", gender: "f", rule: "По значению: мать", translation: "мать", topic: "Famille", collocs: ["ma mère", "mère de famille", "parler à la mère", "chez ma mère"] },
+            { word: "frère", article: "le", full: "le frère", gender: "m", rule: "По значению: брат", translation: "брат", topic: "Famille", collocs: ["mon frère", "frère de Pierre", "avec mon frère", "petit frère"] },
+            { word: "sœur", article: "la", full: "la sœur", gender: "f", rule: "По значению: сестра", translation: "сестра", topic: "Famille", collocs: ["ma sœur", "sœur de Julie", "avec ma sœur", "grande sœur"] },
+            { word: "famille", article: "la", full: "la famille", gender: "f", rule: "Окончание -ille", translation: "семья", topic: "Famille", collocs: ["ma famille", "famille nombreuse", "en famille", "nom de famille"] },
+            { word: "fils", article: "le", full: "le fils", gender: "m", rule: "Мужской пол", translation: "сын", topic: "Famille", collocs: ["mon fils", "fils unique", "parler à son fils", "le fils de Marie"] },
+            { word: "fille", article: "la", full: "la fille", gender: "f", rule: "Женский пол / -ille", translation: "дочь/девушка", topic: "Famille", collocs: ["ma fille", "petite fille", "fille de 20 ans", "parler à la fille"] },
+            { word: "garçon", article: "le", full: "le garçon", gender: "m", rule: "Мужской пол / -on", translation: "мальчик", topic: "Gens", collocs: ["un petit garçon", "garçon de café", "quel garçon ?", "jouer avec le garçon"] },
             
-            // ДОМ
-            { word: "maison", article: "la", full: "la maison", gender: "f", rule: "База А1 (учим)", translation: "дом", topic: "Дом", collocs: ["à la maison", "maison de famille", "rentrer à la maison", "devant la maison"] },
-            { word: "appartement", article: "un", full: "un appartement", gender: "m", rule: "Суффикс -ment → м.р.", translation: "квартира", topic: "Дом", collocs: ["un appartement", "louer un appartement", "appartement moderne"] },
-            { word: "immeuble", article: "un", full: "un immeuble", gender: "m", rule: "Исключение (м.р.)", translation: "здание / многоквартирный дом", topic: "Дом", collocs: ["devant l'immeuble", "immeuble ancien", "entrer dans l'immeuble"] },
-            { word: "cuisine", article: "la", full: "la cuisine", gender: "f", rule: "Окончание -ine → ж.р.", translation: "кухня", topic: "Дом", collocs: ["faire la cuisine", "dans la cuisine", "cuisine équipée"] },
-            { word: "chambre", article: "la", full: "la chambre", gender: "f", rule: "Окончание -re (учим)", translation: "комната (спальня)", topic: "Дом", collocs: ["dans ma chambre", "chambre d'amis", "ranger la chambre"] },
-            { word: "jardin", article: "le", full: "le jardin", gender: "m", rule: "Окончание -in → м.р.", translation: "сад", topic: "Дом", collocs: ["dans le jardin", "jardin public", "jouer au jardin"] },
-            { word: "fenêtre", article: "la", full: "la fenêtre", gender: "f", rule: "Окончание -re (учим)", translation: "окно", topic: "Дом", collocs: ["par la fenêtre", "ouvrir la fenêtre", "près de la fenêtre"] },
-            { word: "porte", article: "la", full: "la porte", gender: "f", rule: "База А1", translation: "дверь", topic: "Дом", collocs: ["ouvrir la porte", "derrière la porte", "porte d'entrée"] },
+            // --- ДОМ ---
+            { word: "maison", article: "la", full: "la maison", gender: "f", rule: "База А1 (запомнить)", translation: "дом", topic: "Maison", collocs: ["à la maison", "rentrer à la maison", "une grande maison", "devant la maison"] },
+            { word: "appartement", article: "un", full: "un appartement", gender: "m", rule: "Суффикс -ment", translation: "квартира", topic: "Maison", collocs: ["louer un appartement", "mon appartement", "dans l'appartement", "petit appartement"] },
+            { word: "cuisine", article: "la", full: "la cuisine", gender: "f", rule: "Окончание -ine", translation: "кухня", topic: "Maison", collocs: ["faire la cuisine", "dans la cuisine", "cuisine moderne", "étagère de cuisine"] },
+            { word: "chambre", article: "la", full: "la chambre", gender: "f", rule: "Окончание -re", translation: "спальня", topic: "Maison", collocs: ["ma chambre", "chambre d'hôtel", "dans la chambre", "ranger la chambre"] },
+            { word: "salle", article: "la", full: "la salle", gender: "f", rule: "Окончание -lle", translation: "зал/комната", topic: "Maison", collocs: ["la salle de bain", "salle à manger", "dans la salle", "salle de classe"] },
+            { word: "étage", article: "le", full: "le étage", gender: "m", rule: "Суффикс -age", translation: "этаж", topic: "Maison", collocs: ["à l'étage", "premier étage", "quel étage ?", "monter à l'étage"] },
+            { word: "mur", article: "le", full: "le mur", gender: "m", rule: "Согласная в конце", translation: "стена", topic: "Maison", collocs: ["contre le mur", "sur le mur", "peindre le mur", "mur blanc"] },
+            { word: "jardin", article: "le", full: "le jardin", gender: "m", rule: "Окончание -in", translation: "сад", topic: "Maison", collocs: ["dans le jardin", "jardin public", "travailler au jardin", "petit jardin"] },
+            { word: "immeuble", article: "un", full: "un immeuble", gender: "m", rule: "Исключение к -е", translation: "здание", topic: "Maison", collocs: ["devant l'immeuble", "habiter l'immeuble", "un vieil immeuble", "entrer dans l'immeuble"] },
+            { word: "fenêtre", article: "la", full: "la fenêtre", gender: "f", rule: "Окончание -re", translation: "окно", topic: "Maison", collocs: ["par la fenêtre", "ouvrir la fenêtre", "près de la fenêtre", "regarder par la fenêtre"] },
+            { word: "porte", article: "la", full: "la porte", gender: "f", rule: "База А1", translation: "дверь", topic: "Maison", collocs: ["fermer la porte", "ouvrir la porte", "devant la porte", "derrière la porte"] },
+            { word: "chaise", article: "la", full: "la chaise", gender: "f", rule: "Окончание -se", translation: "стул", topic: "Maison", collocs: ["sur la chaise", "une chaise en bois", "s'asseoir sur la chaise", "prendre une chaise"] },
+            { word: "table", article: "la", full: "la table", gender: "f", rule: "Окончание -ble (чаще ж.р.)", translation: "стол", topic: "Maison", collocs: ["sur la table", "mettre la table", "autour de la table", "sous la table"] },
+            { word: "lit", article: "le", full: "le lit", gender: "m", rule: "Согласная в конце", translation: "кровать", topic: "Maison", collocs: ["dans le lit", "faire le lit", "sous le lit", "un grand lit"] },
 
-            // ГОРОД
-            { word: "ville", article: "la", full: "la ville", gender: "f", rule: "Окончание -ille → ж.р.", translation: "город", topic: "Город", collocs: ["en ville", "centre-ville", "vivre en ville"] },
-            { word: "rue", article: "la", full: "la rue", gender: "f", rule: "Окончание -ue → ж.р.", translation: "улица", topic: "Город", collocs: ["dans la rue", "rue principale", "traverser la rue"] },
-            { word: "magasin", article: "le", full: "le magasin", gender: "m", rule: "Окончание -in → м.р.", translation: "магазин", topic: "Город", collocs: ["au magasin", "ouvrir le magasin", "dans le magasin"] },
-            { word: "gare", article: "la", full: "la gare", gender: "f", rule: "Исключение (ж.р.)", translation: "вокзал", topic: "Город", collocs: ["à la gare", "aller à la gare", "gare du Nord"] },
-            { word: "boulangerie", article: "la", full: "la boulangerie", gender: "f", rule: "Суффикс -erie → ж.р.", translation: "булочная", topic: "Город", collocs: ["à la boulangerie", "aller à la boulangerie", "boulangerie du quartier"] },
-            { word: "musée", article: "le", full: "le musée", gender: "m", rule: "Исключение к -ée (м.р.)", translation: "музей", topic: "Город", collocs: ["au musée", "visiter le musée", "entrée du musée"] },
-            { word: "parc", article: "le", full: "le parc", gender: "m", rule: "Окончание на согласную → м.р.", translation: "парк", topic: "Город", collocs: ["dans le parc", "aller au parc", "parc municipal"] },
+            // --- ГОРОД ---
+            { word: "ville", article: "la", full: "la ville", gender: "f", rule: "Окончание -ille", translation: "город", topic: "Ville", collocs: ["en ville", "centre-ville", "ma ville", "visiter la ville"] },
+            { word: "rue", article: "la", full: "la rue", gender: "f", rule: "Окончание -ue", translation: "улица", topic: "Ville", collocs: ["dans la rue", "traverser la rue", "au coin de la rue", "rue calme"] },
+            { word: "magasin", article: "le", full: "le magasin", gender: "m", rule: "Окончание -in", translation: "магазин", topic: "Ville", collocs: ["au magasin", "ouvrir le magasin", "dans le magasin", "un grand magasin"] },
+            { word: "musée", article: "le", full: "le musée", gender: "m", rule: "Исключение к -ée", translation: "музей", topic: "Ville", collocs: ["visiter le musée", "entrée du musée", "au musée", "musée d'art"] },
+            { word: "gare", article: "la", full: "la gare", gender: "f", rule: "Исключение", translation: "вокзал", topic: "Ville", collocs: ["à la gare", "gare du Nord", "devant la gare", "aller à la gare"] },
+            { word: "boulangerie", article: "la", full: "la boulangerie", gender: "f", rule: "Суффикс -erie", translation: "булочная", topic: "Ville", collocs: ["à la boulangerie", "aller à la boulangerie", "la boulangerie est ouverte", "devant la boulangerie"] },
+            { word: "parc", article: "le", full: "le parc", gender: "m", rule: "Согласная", translation: "парк", topic: "Ville", collocs: ["dans le parc", "parc public", "aller au parc", "un parc calme"] },
+            { word: "cinéma", article: "le", full: "le cinéma", gender: "m", rule: "Окончание -а", translation: "кино", topic: "Ville", collocs: ["au cinéma", "aller au cinéma", "devant le cinéma", "film au cinéma"] },
+            { word: "hôpital", article: "l'", full: "l'hôpital", gender: "m", rule: "Согласная", translation: "больница", topic: "Ville", collocs: ["à l'hôpital", "entrer à l'hôpital", "hôpital public", "devant l'hôpital"] },
+            { word: "banque", article: "la", full: "la banque", gender: "f", rule: "Окончание -que", translation: "банк", topic: "Ville", collocs: ["à la banque", "compte en banque", "entrer dans la banque", "chercher la banque"] },
+            { word: "pont", article: "le", full: "le pont", gender: "m", rule: "Согласная", translation: "мост", topic: "Ville", collocs: ["sur le pont", "traverser le pont", "sous le pont", "le pont de Paris"] },
+            { word: "place", article: "la", full: "la place", gender: "f", rule: "Окончание -ce", translation: "площадь", topic: "Ville", collocs: ["sur la place", "la place centrale", "aller à la place", "quelle place ?"] },
 
-            // ТРАНСПОРТ
-            { word: "voiture", article: "la", full: "la voiture", gender: "f", rule: "Окончание -ure → ж.р.", translation: "машина", topic: "Транспорт", collocs: ["en voiture", "ma voiture", "monter en voiture"] },
-            { word: "véло", article: "le", full: "le vélo", gender: "m", rule: "Окончание -о → м.р.", translation: "велосипед", topic: "Транспорт", collocs: ["à vélo", "faire du vélo", "mon vélo"] },
-            { word: "bus", article: "le", full: "le bus", gender: "m", rule: "Согласная в конце → м.р.", translation: "автобус", topic: "Транспорт", collocs: ["en bus", "prendre le bus", "arrêt de bus"] },
-            { word: "train", article: "le", full: "le train", gender: "m", rule: "Согласная в конце → м.р.", translation: "поезд", topic: "Транспорт", collocs: ["en train", "prendre le train", "billet de train"] },
-            { word: "avion", article: "l'", full: "l'avion", gender: "m", rule: "Окончание -ion (исключение к ж.р.)", translation: "самолет", topic: "Транспорт", collocs: ["en avion", "prendre l'avion", "voyager en avion"] },
+            // --- ЕДА ---
+            { word: "pain", article: "le", full: "le pain", gender: "m", rule: "База А1", translation: "хлеб", topic: "Nourriture", collocs: ["du pain", "manger du pain", "morceau de pain", "pain frais"] },
+            { word: "eau", article: "l'", full: "l'eau", gender: "f", rule: "Исключение", translation: "вода", topic: "Nourriture", collocs: ["boire de l'eau", "verre d'eau", "eau minérale", "bouteille d'eau"] },
+            { word: "viande", article: "la", full: "la viande", gender: "f", rule: "Окончание -ande", translation: "мясо", topic: "Nourriture", collocs: ["manger de la viande", "viande rouge", "avec de la viande", "cuire la viande"] },
+            { word: "pomme", article: "la", full: "la pomme", gender: "f", rule: "Окончание -е", translation: "яблоко", topic: "Nourriture", collocs: ["une pomme rouge", "manger une pomme", "jus de pomme", "tarte aux pommes"] },
+            { word: "fromage", article: "le", full: "le fromage", gender: "m", rule: "Суффикс -age", translation: "сыр", topic: "Nourriture", collocs: ["du fromage", "manger du fromage", "un morceau de fromage", "quel fromage ?"] },
+            { word: "café", article: "le", full: "le café", gender: "m", rule: "Напитки на -é", translation: "кофе", topic: "Nourriture", collocs: ["prendre un café", "café noir", "tasse de café", "avec du café"] },
+            { word: "thé", article: "le", full: "le thé", gender: "m", rule: "Напитки", translation: "чай", topic: "Nourriture", collocs: ["boire du thé", "tasse de thé", "thé vert", "un peu de thé"] },
+            { word: "sucre", article: "le", full: "le sucre", gender: "m", rule: "Исключение к -е", translation: "сахар", topic: "Nourriture", collocs: ["avec du sucre", "sans sucre", "morceau de sucre", "passer le sucre"] },
+            { word: "sel", article: "le", full: "le sel", gender: "m", rule: "Согласная", translation: "соль", topic: "Nourriture", collocs: ["mettre du sel", "le sel est sur la table", "sans sel", "un peu de sel"] },
+            { word: "œuf", article: "l'", full: "l'œuf", gender: "m", rule: "Согласная", translation: "яйцо", topic: "Nourriture", collocs: ["manger un œuf", "un œuf dur", "cuire l'œuf", "boîte d'œufs"] },
+            { word: "lait", article: "le", full: "le lait", gender: "m", rule: "Согласная", translation: "молоко", topic: "Nourriture", collocs: ["boire du lait", "verre de lait", "lait froid", "avec du lait"] },
 
-            // ЕДА
-            { word: "pain", article: "le", full: "le pain", gender: "m", rule: "База А1", translation: "хлеб", topic: "Еда", collocs: ["du pain", "manger du pain", "baguette de pain"] },
-            { word: "eau", article: "l'", full: "l'eau", gender: "f", rule: "Исключение (ж.р.)", translation: "вода", topic: "Еда", collocs: ["de l'eau", "boire de l'eau", "verre d'eau"] },
-            { word: "café", article: "le", full: "le café", gender: "m", rule: "Напитки на -é → м.р.", translation: "кофе", topic: "Еда", collocs: ["un café", "prendre un café", "café au lait"] },
-            { word: "thé", article: "le", full: "le thé", gender: "m", rule: "Напитки → м.р.", translation: "чай", topic: "Еда", collocs: ["un thé", "boire du thé", "thé vert"] },
-            { word: "fruit", article: "le", full: "le fruit", gender: "m", rule: "Окончание на согласную → м.р.", translation: "фрукт", topic: "Еда", collocs: ["un fruit", "jus de fruits", "fruit frais"] },
-            { word: "légume", article: "le", full: "le legume", gender: "m", rule: "Исключение к -е (м.р.)", translation: "овощ", topic: "Еда", collocs: ["un légume", "soupe de légumes", "légume vert"] },
-            { word: "fromage", article: "le", full: "le fromage", gender: "m", rule: "Суффикс -age → м.р.", translation: "сыр", topic: "Еда", collocs: ["du fromage", "manger du fromage", "plateau de fromages"] },
-            { word: "pomme", article: "la", full: "la pomme", gender: "f", rule: "Окончание -е (ж.р.)", translation: "яблоко", topic: "Еда", collocs: ["une pomme", "manger une pomme", "jus de pomme"] },
-            { word: "viande", article: "la", full: "la viande", gender: "f", rule: "Окончание -ande → ж.р.", translation: "мясо", topic: "Еда", collocs: ["de la viande", "manger de la viande", "viande rouge"] },
-            { word: "bière", article: "la", full: "la bière", gender: "f", rule: "Окончание -ière → ж.р.", translation: "пиво", topic: "Еда", collocs: ["une bière", "boire une bière", "bière fraîche"] },
+            // --- ТРАНСПОРТ ---
+            { word: "voiture", article: "la", full: "la voiture", gender: "f", rule: "Окончание -ure", translation: "машина", topic: "Transport", collocs: ["en voiture", "conduire la voiture", "la voiture de Paul", "ma voiture"] },
+            { word: "vélo", article: "le", full: "le vélo", gender: "m", rule: "Окончание -о", translation: "велосипед", topic: "Transport", collocs: ["faire du vélo", "à vélo", "mon vélo", "monter à vélo"] },
+            { word: "bus", article: "le", full: "le bus", gender: "m", rule: "Согласная", translation: "автобус", topic: "Transport", collocs: ["prendre le bus", "arrêt de bus", "dans le bus", "monter dans le bus"] },
+            { word: "train", article: "le", full: "le train", gender: "m", rule: "Согласная", translation: "поезд", topic: "Transport", collocs: ["en train", "billet de train", "voyager en train", "prendre le train"] },
+            { word: "avion", article: "l'", full: "l'avion", gender: "m", rule: "Исключение к -ion", translation: "самолет", topic: "Transport", collocs: ["prendre l'avion", "voyager en avion", "l'avion décolle", "dans l'avion"] },
+            { word: "moto", article: "la", full: "la moto", gender: "f", rule: "Исключение к -о", translation: "мотоцикл", topic: "Transport", collocs: ["à moto", "faire de la moto", "quelle moto ?", "ma moto"] },
+            { word: "bateau", article: "le", full: "le bateau", gender: "m", rule: "Окончание -eau", translation: "лодка/корабль", topic: "Transport", collocs: ["en bateau", "voyager en bateau", "monter sur le bateau", "le petit bateau"] },
 
-            // УЧЕБА / РАБОТА
-            { word: "école", article: "l'", full: "l'école", gender: "f", rule: "Окончание -ole → ж.р.", translation: "школа", topic: "Учеба", collocs: ["à l'école", "aller à l'école", "école primaire"] },
-            { word: "livre", article: "le", full: "le livre", gender: "m", rule: "Исключение к -е (м.р.)", translation: "книга", topic: "Учеба", collocs: ["lire un livre", "livre de français", "ouvrir le livre"] },
-            { word: "travail", article: "le", full: "le travail", gender: "m", rule: "Окончание -ail → м.р.", translation: "работа", topic: "Работа", collocs: ["au travail", "chercher du travail", "aller au travail"] },
-            { word: "ordinateur", article: "l'", full: "l'ordinateur", gender: "m", rule: "Окончание -eur (предметы) → м.р.", translation: "компьютер", topic: "Работа", collocs: ["sur l'ordinateur", "allumer l'ordinateur", "mon ordinateur"] },
-            { word: "bureau", article: "le", full: "le bureau", gender: "m", rule: "Окончание -eau → м.р.", translation: "офис / письменный стол", topic: "Работа", collocs: ["au bureau", "aller au bureau", "dans mon bureau"] },
-            { word: "leçon", article: "la", full: "la leçon", gender: "f", rule: "Окончание -on (исключение)", translation: "урок", topic: "Учеба", collocs: ["une leçon", "apprendre la leçon", "leçon de français"] },
+            // --- РАБОТА И УЧЕБА ---
+            { word: "école", article: "l'", full: "l'école", gender: "f", rule: "Окончание -ole", translation: "школа", topic: "Études", collocs: ["à l'école", "aller à l'école", "école primaire", "devant l'école"] },
+            { word: "livre", article: "le", full: "le livre", gender: "m", rule: "Исключение к -е", translation: "книга", topic: "Études", collocs: ["lire un livre", "livre de français", "ouvrir le livre", "un vieux livre"] },
+            { word: "ordinateur", article: "l'", full: "l'ordinateur", gender: "m", rule: "Окончание -eur (предмет)", translation: "компьютер", topic: "Travail", collocs: ["mon ordinateur", "sur l'ordinateur", "allumer l'ordinateur", "ordinateur portable"] },
+            { word: "bureau", article: "le", full: "le bureau", gender: "m", rule: "Окончание -eau", translation: "офис/стол", topic: "Travail", collocs: ["au bureau", "travailler au bureau", "mon bureau", "dans le bureau"] },
+            { word: "travail", article: "le", full: "le travail", gender: "m", rule: "Окончание -ail", translation: "работа", topic: "Travail", collocs: ["au travail", "chercher du travail", "mon travail", "pendant le travail"] },
+            { word: "cahier", article: "le", full: "le cahier", gender: "m", rule: "Окончание -ier", translation: "тетрадь", topic: "Études", collocs: ["dans le cahier", "un nouveau cahier", "écrire dans le cahier", "mon cahier"] },
+            { word: "stylo", article: "le", full: "le stylo", gender: "m", rule: "Окончание -о", translation: "ручка", topic: "Études", collocs: ["écrire au stylo", "mon stylo", "chercher un stylo", "bleu comme le stylo"] },
+            { word: "langue", article: "la", full: "la langue", gender: "f", rule: "Окончание -gue", translation: "язык", topic: "Études", collocs: ["la langue française", "apprendre une langue", "quelle langue ?", "langue maternelle"] },
 
-            // ПРИРОДА / ВРЕМЯ
-            { word: "soleil", article: "le", full: "le soleil", gender: "m", rule: "Окончание -eil → м.р.", translation: "солнце", topic: "Природа", collocs: ["au soleil", "le soleil brille", "sous le soleil"] },
-            { word: "pluie", article: "la", full: "la pluie", gender: "f", rule: "Окончание -ie → ж.р.", translation: "дождь", topic: "Природа", collocs: ["sous la pluie", "il y a de la pluie", "marcher sous la pluie"] },
-            { word: "mer", article: "la", full: "la mer", gender: "f", rule: "Исключение (ж.р.)", translation: "море", topic: "Природа", collocs: ["à la mer", "bord de la mer", "nager dans la mer"] },
-            { word: "jour", article: "le", full: "le jour", gender: "m", rule: "База А1", translation: "день", topic: "Время", collocs: ["pendant le jour", "chaque jour", "le jour J"] },
-            { word: "nuit", article: "la", full: "la nuit", gender: "f", rule: "Исключение (ж.р.)", translation: "ночь", topic: "Время", collocs: ["la nuit", "bonne nuit", "toute la nuit"] },
+            // --- ПРИРОДА ---
+            { word: "mer", article: "la", full: "la mer", gender: "f", rule: "Исключение", translation: "море", topic: "Nature", collocs: ["à la mer", "bord de la mer", "la mer bleue", "regarder la mer"] },
+            { word: "soleil", article: "le", full: "le soleil", gender: "m", rule: "Окончание -eil", translation: "солнце", topic: "Nature", collocs: ["au soleil", "le soleil brille", "sous le soleil", "lever du soleil"] },
+            { word: "pluie", article: "la", full: "la pluie", gender: "f", rule: "Окончание -ie", translation: "дождь", topic: "Nature", collocs: ["sous la pluie", "il y a de la pluie", "marcher sous la pluie", "quelle pluie !"] },
+            { word: "fleur", article: "la", full: "la fleur", gender: "f", rule: "Исключение к -eur", translation: "цветок", topic: "Nature", collocs: ["une jolie fleur", "offrir une fleur", "quelle fleur ?", "sentir la fleur"] },
+            { word: "arbre", article: "le", full: "le arbre", gender: "m", rule: "Исключение к -е", translation: "дерево", topic: "Nature", collocs: ["sous un arbre", "monter à l'arbre", "un grand arbre", "feuille d'arbre"] },
+            { word: "ciel", article: "le", full: "le ciel", gender: "m", rule: "Согласная", translation: "небо", topic: "Nature", collocs: ["dans le ciel", "le ciel bleu", "regarder le ciel", "sous le ciel"] },
 
-            // АБСТРАКТНОЕ
-            { word: "problème", article: "le", full: "le problème", gender: "m", rule: "Греческие корни -ème → м.р.", translation: "проблема", topic: "Абстрактное", collocs: ["un проблема", "avoir un проблема", "régler le проблема"] },
-            { word: "question", article: "la", full: "la question", gender: "f", rule: "Суффикс -tion → ж.р.", translation: "вопрос", topic: "Абстрактное", collocs: ["une вопрос", "poser une вопрос", "répondре à la вопрос"] },
-            { word: "idée", article: "l'", full: "l'idée", gender: "f", rule: "Окончание -ée → ж.р.", translation: "идея", topic: "Абстрактное", collocs: ["une идея", "avoir une идея", "bonne идея"] },
-            { word: "chose", article: "la", full: "la chose", gender: "f", rule: "Базовое А1", translation: "вещь", topic: "Абстрактное", collocs: ["une chose simple", "la chose importante", "penser à une chose"] },
-            { word: "vie", article: "la", full: "la vie", gender: "f", rule: "Окончание -ie → ж.р.", translation: "жизнь", topic: "Абстрактное", collocs: ["la vie quotidienne", "changer de vie", "dans la vie"] },
-            { word: "temps", article: "le", full: "le temps", gender: "m", rule: "Окончание -s → м.р.", translation: "время / погода", topic: "Абстрактное", collocs: ["avoir le temps", "perdre son temps", "avec le temps"] }
+            // --- АБСТРАКТНОЕ ---
+            { word: "problème", article: "le", full: "le problème", gender: "m", rule: "Греч. корень -ème", translation: "проблема", topic: "Abstrait", collocs: ["avoir un problème", "régler le problème", "pas de problème", "un gros problème"] },
+            { word: "idée", article: "l'", full: "l'idée", gender: "f", rule: "Окончание -ée", translation: "идея", topic: "Abstrait", collocs: ["une bonne idée", "avoir une idée", "parler d'une idée", "l'idée du projet"] },
+            { word: "question", article: "la", full: "la question", gender: "f", rule: "Суффикс -tion", translation: "вопрос", topic: "Abstrait", collocs: ["poser une question", "répondre à la question", "une question simple", "quelle question ?"] },
+            { word: "chose", article: "la", full: "la chose", gender: "f", rule: "База А1", translation: "вещь", topic: "Abstrait", collocs: ["une chose simple", "penser à une chose", "la chose importante", "quelle chose ?"] },
+            { word: "vie", article: "la", full: "la vie", gender: "f", rule: "Окончание -ie", translation: "жизнь", topic: "Abstrait", collocs: ["la vie est belle", "changer de vie", "dans la vie", "vie de famille"] },
+            { word: "temps", article: "le", full: "le temps", gender: "m", rule: "Согласная -s", translation: "время", topic: "Abstrait", collocs: ["avoir le temps", "perdre son temps", "quel temps fait-il ?", "pendant ce temps"] },
+            { word: "réponse", article: "la", full: "la response", gender: "f", rule: "Окончание -se", translation: "ответ", topic: "Abstrait", collocs: ["donner une réponse", "sans réponse", "quelle réponse ?", "réponse correcte"] },
+            { word: "situation", article: "la", full: "la situation", gender: "f", rule: "Суффикс -tion", translation: "ситуация", topic: "Abstrait", collocs: ["dans cette situation", "parler de la situation", "une situation difficile", "analyser la situation"] },
+            { word: "moment", article: "le", full: "le moment", gender: "m", rule: "Суффикс -ment", translation: "момент", topic: "Abstrait", collocs: ["en ce moment", "un bon moment", "quel moment ?", "le moment est venu"] },
+            { word: "nom", article: "le", full: "le nom", gender: "m", rule: "Согласная", translation: "имя/фамилия", topic: "Abstrait", collocs: ["mon nom", "nom de famille", "donner son nom", "quel est ton nom ?"] }
         ];
 
         let state = {
@@ -320,7 +391,7 @@
                 header.className = "modal-header correct";
             } else {
                 state.score.wrong++;
-                header.innerText = "Oups ! C'est faux.";
+                header.innerText = "Faux !";
                 header.className = "modal-header wrong";
             }
 
@@ -338,9 +409,18 @@
         /* --- CLOUD MODE --- */
         let activeCloudWordId = null;
 
+        function openCloudSettings() {
+            showScreen('cloud-settings-screen');
+        }
+
         function startCloud() {
-            state.timer = 60; // Увеличено до 60 сек для большего списка
-            state.cloudWords = [...allWords].sort(() => 0.5 - Math.random()).slice(0, 15);
+            const countInput = parseInt(document.getElementById('cloud-word-count').value);
+            // Ensure we don't request more than available
+            const count = Math.min(countInput, allWords.length);
+            
+            state.timer = parseInt(document.getElementById('cloud-timer-val').value);
+            
+            state.cloudWords = [...allWords].sort(() => 0.5 - Math.random()).slice(0, count);
             renderCloud();
             showScreen('cloud-screen');
             startTimer();
@@ -354,7 +434,7 @@
                 document.getElementById('timer').innerText = state.timer;
                 if (state.timer <= 0) {
                     clearInterval(state.interval);
-                    alert("Время вышло! Не сдавайся!");
+                    alert("Temps écoulé !");
                     exitGame();
                 }
             }, 1000);
@@ -374,7 +454,7 @@
 
         function selectCloudWord(index, element) {
             document.querySelectorAll('.cloud-word').forEach(w => w.style.borderColor = '#e2e8f0');
-            element.style.borderColor = "#2563eb";
+            element.style.borderColor = "var(--blue)";
             activeCloudWordId = index;
         }
 
@@ -388,11 +468,12 @@
                 renderCloud();
                 if (state.cloudWords.length === 0) {
                     clearInterval(state.interval);
-                    alert("Прекрасно! Ты распределил все слова!");
+                    alert("Bravo ! Vous avez terminé !");
                     exitGame();
                 }
             } else {
-                alert(`Внимание! ${word.full.toUpperCase()} — это ${word.gender === 'm' ? 'LE' : 'LA'} (${word.translation})`);
+                // Short flash or visual cue could be here instead of alert for better UX
+                alert(`Erreur ! ${word.full.toUpperCase()} (${word.translation})`);
             }
         }
     </script>
