@@ -3,479 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LULA - A1 French Gender Trainer</title>
+    <title>LULA — 100 Mots A1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary: #0f172a;
-            --blue: #2563eb;
-            --red: #dc2626;
-            --bg: #f8fafc;
-            --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            color: var(--primary);
+            font-family: 'Poppins', sans-serif;
+            background-color: #f1f5f9;
+            touch-action: manipulation;
             overflow: hidden;
+            user-select: none;
         }
 
-        /* --- Screens --- */
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            flex-grow: 1;
-            width: 100%;
+        .gender-le { background-color: #2563eb; }
+        .gender-la { background-color: #dc2626; }
+        
+        .word-selected {
+            ring: 4px solid #fbbf24;
+            transform: scale(1.1);
+            z-index: 50;
+        }
+
+        .cloud-item {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .hidden-el { display: none !important; }
+
+        @keyframes pulse-red {
+            0%, 100% { color: #dc2626; }
+            50% { color: #ef4444; opacity: 0.7; }
+        }
+        .timer-urgent { animation: pulse-red 1s infinite; }
+
+        .list-column {
+            width: 130px;
             height: 100%;
-        }
-
-        .screen.active { display: flex; }
-
-        /* --- Menu --- */
-        .logo-box { text-align: center; margin-bottom: 40px; }
-        .logo { font-size: clamp(60px, 15vw, 90px); font-weight: 900; margin: 0; letter-spacing: -4px; line-height: 1; }
-        .subtitle { font-size: 18px; color: #64748b; font-style: italic; margin-top: 10px; }
-
-        .btn {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 20px;
-            border-radius: 28px;
-            width: 100%;
-            max-width: 360px;
-            cursor: pointer;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.7);
+            border-radius: 1rem;
+            padding: 8px;
             display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 15px;
-            text-align: left;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        .btn:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: var(--card-shadow); }
-        .btn-icon { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-        .blue-icon { background: #dbeafe; color: var(--blue); }
-        .red-icon { background: #fee2e2; color: var(--red); }
-        
-        .btn-text h3 { margin: 0; font-size: 20px; font-weight: 800; }
-
-        /* --- Cloud Settings Modal --- */
-        .settings-box {
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            width: 100%;
-            max-width: 360px;
-            box-shadow: var(--card-shadow);
-            margin-top: 20px;
+        .entry-correct {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 2px solid #22c55e;
         }
-        .settings-title { font-weight: 800; margin-bottom: 20px; text-align: center; }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .setting-row select { padding: 8px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600; width: 100px; }
-
-        /* --- Game Header --- */
-        .game-header { position: absolute; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); z-index: 50; border-bottom: 1px solid #e2e8f0; }
-
-        /* --- Basic Game --- */
-        .word-card { 
-            background: white; 
-            padding: 60px 30px; 
-            border-radius: 40px; 
-            box-shadow: var(--card-shadow); 
-            text-align: center; 
-            width: 100%; 
-            max-width: 450px;
-            margin-bottom: 40px;
-            border: 1px solid #f1f5f9;
-        }
-        
-        .word-topic { color: var(--blue); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 15px; opacity: 0.7; }
-        .word-text { font-size: clamp(40px, 10vw, 64px); font-weight: 900; text-transform: uppercase; margin: 0; color: #1e293b; }
-        
-        .game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 450px; }
-        .choice-btn { border: none; padding: 25px; border-radius: 24px; color: white; font-size: 28px; font-weight: 900; cursor: pointer; transition: transform 0.1s; }
-        .le-btn { background: var(--blue); }
-        .la-btn { background: var(--red); }
-
-        /* --- Cloud Game --- */
-        .cloud-container { flex-grow: 1; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 10px; padding: 80px 20px 25vh; overflow-y: auto; width: 100%; }
-        .cloud-word { background: white; border: 2px solid #e2e8f0; padding: 10px 16px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; user-select: none; transition: all 0.2s; }
-        
-        .cloud-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 20vh; background: #f1f5f9; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; border-top: 1px solid #e2e8f0; }
-        .drop-zone { border-radius: 20px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 32px; cursor: pointer; }
-        .zone-le { background: #dbeafe; color: var(--blue); }
-        .zone-la { background: #fee2e2; color: var(--red); }
-
-        .finir-btn {
-            position: absolute;
-            bottom: 22vh;
-            right: 20px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            color: #64748b;
-            cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        .entry-wrong {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+            animation: shake 0.4s ease-in-out;
         }
 
-        /* --- Modals --- */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: white; border-radius: 35px; overflow-y: auto; max-height: 90vh; max-width: 450px; width: 100%; }
-        .modal-header { padding: 20px; color: white; font-weight: 900; font-size: 24px; text-align: center; }
-        .modal-body { padding: 30px; }
-        .modal-word { font-size: 42px; font-weight: 900; color: #0f172a; display: block; text-align: center; }
-        .modal-trans { font-size: 20px; color: #64748b; font-style: italic; display: block; text-align: center; margin-bottom: 25px; }
-        .modal-rule { background: #f0f9ff; padding: 15px; border-radius: 18px; color: #0369a1; font-size: 15px; font-weight: 600; margin-bottom: 20px; }
-        .colloc-item { background: #f8fafc; padding: 8px 12px; border-radius: 10px; font-size: 13px; color: #475569; border: 1px solid #f1f5f9; margin-bottom: 6px; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
 
-        .correct { background: #22c55e; }
-        .wrong { background: #ef4444; }
-        .back-btn { background: #f1f5f9; border: none; width: 44px; height: 44px; border-radius: 14px; cursor: pointer; }
-        #timer { font-weight: 900; font-size: 24px; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="h-screen w-full flex flex-col">
 
-    <!-- MENU SCREEN -->
-    <div id="menu-screen" class="screen active">
-        <div class="logo-box">
-            <h1 class="logo">LULA</h1>
-            <p class="subtitle">Le ou la ? C’est du gâteau.</p>
-        </div>
+    <header class="p-4 bg-white shadow-md flex justify-between items-center z-10">
+        <h1 class="text-xl font-black text-blue-600 tracking-tighter">LULA <span class="text-slate-400 font-light">100 MOTS</span></h1>
+        <button id="btn-menu" class="hidden-el px-4 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-sm font-bold">Menu</button>
+    </header>
+
+    <main id="main-view" class="flex-1 relative overflow-hidden">
         
-        <button class="btn" onclick="startBasic()">
-            <div class="btn-icon blue-icon">▶</div>
-            <div class="btn-text"><h3>LULA Basic</h3></div>
-        </button>
-
-        <button class="btn" onclick="openCloudSettings()">
-            <div class="btn-icon red-icon">☁</div>
-            <div class="btn-text"><h3>LULA Cloud</h3></div>
-        </button>
-    </div>
-
-    <!-- CLOUD SETTINGS -->
-    <div id="cloud-settings-screen" class="screen">
-        <div class="settings-box">
-            <h2 class="settings-title">Config Cloud</h2>
-            <div class="setting-row">
-                <span>Mots:</span>
-                <select id="cloud-word-count">
-                    <option value="5">5</option>
-                    <option value="10" selected>10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+        <section id="screen-home" class="h-full flex flex-col items-center justify-center p-6 space-y-4">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-black text-slate-800 mb-2">Bienvenue !</h2>
+                <p class="text-slate-500 italic">Maîtrisez les 100 mots essentiels de l'A1</p>
             </div>
-            <div class="setting-row">
-                <span>Temps (s):</span>
-                <select id="cloud-timer-val">
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="30" selected>30</option>
-                    <option value="45">45</option>
-                </select>
+            
+            <button onclick="initBasic()" class="w-full max-w-xs p-6 bg-white border-b-4 border-blue-500 rounded-2xl shadow-lg hover:bg-blue-50 transition-all text-left">
+                <span class="text-3xl">🎯</span>
+                <h3 class="text-xl font-bold text-slate-800">LULA Basic</h3>
+                <p class="text-sm text-slate-500">Un mot à la fois.</p>
+            </button>
+
+            <button onclick="showSettings()" class="w-full max-w-xs p-6 bg-white border-b-4 border-red-500 rounded-2xl shadow-lg hover:bg-red-50 transition-all text-left">
+                <span class="text-3xl">☁️</span>
+                <h3 class="text-xl font-bold text-slate-800">Cloud Timer</h3>
+                <p class="text-sm text-slate-500">Rapidité ! Triez les mots.</p>
+            </button>
+        </section>
+
+        <section id="screen-settings" class="hidden-el h-full flex flex-col items-center justify-center p-6">
+            <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm space-y-6">
+                <h2 class="text-2xl font-black text-center text-slate-800">Configuration</h2>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-600 uppercase">Nombre de mots</label>
+                    <input type="range" id="cloud-qty" min="10" max="50" step="5" value="15" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-500">
+                    <div class="text-center font-bold text-red-500" id="qty-val">15</div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-600 uppercase">Temps (secondes)</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setTimer(30)" class="t-btn p-3 border-2 rounded-xl font-bold" data-t="30">30</button>
+                        <button onclick="setTimer(60)" class="t-btn p-3 border-2 rounded-xl font-bold bg-red-500 border-red-500 text-white" data-t="60">60</button>
+                        <button onclick="setTimer(120)" class="t-btn p-3 border-2 rounded-xl font-bold" data-t="120">120</button>
+                    </div>
+                </div>
+
+                <button onclick="startCloud()" class="w-full py-4 bg-slate-900 text-white font-black rounded-2xl shadow-xl hover:scale-105 transition active:scale-95 uppercase tracking-widest">Jouer !</button>
             </div>
-            <button class="choice-btn le-btn" style="width:100%; font-size:18px;" onclick="startCloud()">START</button>
-            <button onclick="exitGame()" style="width:100%; background:none; border:none; margin-top:15px; cursor:pointer; color:#64748b;">Retour</button>
-        </div>
-    </div>
+        </section>
 
-    <!-- BASIC GAME SCREEN -->
-    <div id="game-screen" class="screen">
-        <div class="game-header">
-            <button class="back-btn" onclick="exitGame()">←</button>
-            <div id="score-display">LE: 0 | LA: 0</div>
-            <div style="width: 44px"></div>
-        </div>
-        <div class="word-card">
-            <div id="word-topic" class="word-topic">TOPIC</div>
-            <h2 id="word-text" class="word-text">WORD</h2>
-        </div>
-        <div class="game-controls">
-            <button class="choice-btn le-btn" onclick="checkAnswer('m')">LE</button>
-            <button class="choice-btn la-btn" onclick="checkAnswer('f')">LA</button>
-        </div>
-    </div>
+        <section id="screen-basic" class="hidden-el h-full flex flex-col">
+            <div class="flex-1 flex">
+                <button onclick="submitBasic('m')" class="flex-1 gender-le hover:opacity-90 transition-opacity flex items-center justify-center">
+                    <span class="text-6xl font-black text-white opacity-30 select-none">LE</span>
+                </button>
+                <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                    <div id="basic-word-box" class="bg-white p-10 px-16 rounded-3xl shadow-2xl border-4 border-slate-100 text-4xl font-black text-slate-800">
+                        ---
+                    </div>
+                </div>
+                <button onclick="submitBasic('f')" class="flex-1 gender-la hover:opacity-90 transition-opacity flex items-center justify-center">
+                    <span class="text-6xl font-black text-white opacity-30 select-none">LA</span>
+                </button>
+            </div>
+        </section>
 
-    <!-- CLOUD GAME SCREEN -->
-    <div id="cloud-screen" class="screen">
-        <div class="game-header">
-            <button class="back-btn" onclick="exitGame()">←</button>
-            <div id="timer">00</div>
-            <div style="width: 44px"></div>
-        </div>
-        <div id="cloud-container" class="cloud-container"></div>
-        <button class="finir-btn" onclick="exitGame()">Finir plus tôt</button>
-        <div class="cloud-footer">
-            <div class="drop-zone zone-le" onclick="handleCloudChoice('m')">LE</div>
-            <div class="drop-zone zone-la" onclick="handleCloudChoice('f')">LA</div>
-        </div>
-    </div>
+        <section id="screen-cloud" class="hidden-el h-full flex flex-col bg-slate-50">
+            <div class="p-3 flex justify-between items-center bg-white border-b">
+                <div id="timer-text" class="text-2xl font-black text-slate-700">01:00</div>
+                <button onclick="stopTimer()" class="px-4 py-1 bg-slate-800 text-white font-bold rounded-full text-xs">FINIR</button>
+            </div>
+            
+            <div class="flex-1 flex overflow-hidden p-2 gap-2">
+                <div class="list-column border-l-4 border-blue-500" id="col-le">
+                    <div class="text-[9px] font-black text-blue-500 uppercase text-center mb-1">LE</div>
+                </div>
+                <div id="cloud-container" class="flex-1 relative overflow-hidden bg-white/50 rounded-3xl border border-slate-200 shadow-inner"></div>
+                <div class="list-column border-r-4 border-red-500" id="col-la">
+                    <div class="text-[9px] font-black text-red-500 uppercase text-center mb-1">LA</div>
+                </div>
+            </div>
 
-    <!-- FEEDBACK MODAL -->
-    <div id="feedback-modal" class="modal">
-        <div class="modal-content">
-            <div id="modal-header" class="modal-header">...</div>
-            <div class="modal-body">
-                <span id="modal-word" class="modal-word">...</span>
-                <span id="modal-trans" class="modal-trans">...</span>
-                <div id="modal-rule" class="modal-rule">...</div>
-                <div id="modal-collocs"></div>
-                <button style="width:100%; padding:20px; border-radius:15px; background:var(--primary); color:white; border:none; font-weight:900; margin-top:20px; cursor:pointer;" onclick="nextWord()">CONTINUER</button>
+            <div class="h-20 flex border-t bg-white">
+                <button onclick="assignTo('le')" class="flex-1 gender-le flex items-center justify-center group">
+                    <span class="text-xl font-black text-white group-hover:scale-110 transition">LE</span>
+                </button>
+                <button onclick="assignTo('la')" class="flex-1 gender-la flex items-center justify-center group">
+                    <span class="text-xl font-black text-white group-hover:scale-110 transition">LA</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="modal-feedback" class="hidden-el fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-200">
+            <div id="modal-header" class="p-4 text-center text-white font-black text-xl">BRAVO !</div>
+            <div class="p-6 space-y-4 text-center">
+                <div id="modal-word" class="text-3xl font-black text-slate-800">le mot</div>
+                <div class="text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Règle :</p>
+                    <p id="modal-rule" class="text-xs text-slate-700 leading-tight"></p>
+                </div>
+                <div class="text-left">
+                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Exemples :</p>
+                    <div id="modal-colloc" class="flex flex-col gap-0.5 text-xs font-semibold text-slate-600"></div>
+                </div>
+                <button id="modal-next" class="w-full py-3 bg-blue-600 text-white font-black rounded-xl shadow-lg">CONTINUER</button>
             </div>
         </div>
     </div>
 
     <script>
-        const allWords = [
-            // --- ЛЮДИ И СЕМЬЯ ---
-            { word: "homme", article: "un", full: "un homme", gender: "m", rule: "По значению: мужчина", translation: "мужчина", topic: "Gens", collocs: ["un homme gentil", "parler à un homme", "homme de 30 ans", "avec un homme"] },
-            { word: "femme", article: "une", full: "une femme", gender: "f", rule: "По значению: женщина", translation: "женщина", topic: "Gens", collocs: ["une femme sympa", "parler à une femme", "femme de mon ami", "avec une femme"] },
-            { word: "enfant", article: "un", full: "un enfant", gender: "m", rule: "По значению (общ.), чаще м.р.", translation: "ребенок", topic: "Gens", collocs: ["un enfant calme", "enfant de 8 ans", "jouer avec un enfant", "parler à un enfant"] },
-            { word: "ami", article: "un", full: "un ami", gender: "m", rule: "Мужской пол", translation: "друг", topic: "Gens", collocs: ["un ami proche", "parler à un ami", "ami de classe", "chercher un ami"] },
-            { word: "amie", article: "une", full: "une amie", gender: "f", rule: "Женский пол", translation: "подруга", topic: "Gens", collocs: ["une amie proche", "parler à une amie", "amie d'enfance", "avec une amie"] },
-            { word: "père", article: "le", full: "le père", gender: "m", rule: "По значению: отец", translation: "отец", topic: "Famille", collocs: ["mon père", "père de famille", "parler au père", "chez mon père"] },
-            { word: "mère", article: "la", full: "la mère", gender: "f", rule: "По значению: мать", translation: "мать", topic: "Famille", collocs: ["ma mère", "mère de famille", "parler à la mère", "chez ma mère"] },
-            { word: "frère", article: "le", full: "le frère", gender: "m", rule: "По значению: брат", translation: "брат", topic: "Famille", collocs: ["mon frère", "frère de Pierre", "avec mon frère", "petit frère"] },
-            { word: "sœur", article: "la", full: "la sœur", gender: "f", rule: "По значению: сестра", translation: "сестра", topic: "Famille", collocs: ["ma sœur", "sœur de Julie", "avec ma sœur", "grande sœur"] },
-            { word: "famille", article: "la", full: "la famille", gender: "f", rule: "Окончание -ille", translation: "семья", topic: "Famille", collocs: ["ma famille", "famille nombreuse", "en famille", "nom de famille"] },
-            { word: "fils", article: "le", full: "le fils", gender: "m", rule: "Мужской пол", translation: "сын", topic: "Famille", collocs: ["mon fils", "fils unique", "parler à son fils", "le fils de Marie"] },
-            { word: "fille", article: "la", full: "la fille", gender: "f", rule: "Женский пол / -ille", translation: "дочь/девушка", topic: "Famille", collocs: ["ma fille", "petite fille", "fille de 20 ans", "parler à la fille"] },
-            { word: "garçon", article: "le", full: "le garçon", gender: "m", rule: "Мужской пол / -on", translation: "мальчик", topic: "Gens", collocs: ["un petit garçon", "garçon de café", "quel garçon ?", "jouer avec le garçon"] },
+        const db = [
+            // PEOPLE & FAMILY
+            { word: "homme", full: "un homme", gender: "m", rule: "Signification: sexe masculin.", colloc: ["un homme gentil", "parler à un homme", "homme de 30 ans", "avec un homme"] },
+            { word: "femme", full: "une femme", gender: "f", rule: "Signification: sexe féminin.", colloc: ["une femme sympa", "parler à une femme", "femme de mon ami", "avec une femme"] },
+            { word: "enfant", full: "un enfant", gender: "m", rule: "Signification générale (A1).", colloc: ["un enfant calme", "enfant de 8 ans", "jouer avec un enfant", "parler à un enfant"] },
+            { word: "ami", full: "un ami", gender: "m", rule: "Sexe masculin.", colloc: ["un ami proche", "parler à un ami", "ami de classe", "chez mon ami"] },
+            { word: "amie", full: "une amie", gender: "f", rule: "Sexe féminin.", colloc: ["une amie fidèle", "avec mon amie", "amie d'enfance", "voir une amie"] },
+            { word: "famille", full: "la famille", gender: "f", rule: "Suffixe -ille (souvent f.).", colloc: ["ma famille", "famille nombreuse", "en famille", "avec la famille"] },
+            { word: "père", full: "le père", gender: "m", rule: "Signification: masculin.", colloc: ["mon père", "le père de Luc", "parler au père", "chez mon père"] },
+            { word: "mère", full: "la mère", gender: "f", rule: "Signification: féminin.", colloc: ["ma mère", "la mère de Marie", "parler à la mère", "chez ma mère"] },
+            { word: "fils", full: "le fils", gender: "m", rule: "Signification: masculin.", colloc: ["mon fils", "le fils de Pierre", "avoir un fils", "parler au fils"] },
+            { word: "fille", full: "la fille", gender: "f", rule: "Signification: féminin.", colloc: ["ma fille", "petite fille", "fille de mon ami", "parler à la fille"] },
+            { word: "frère", full: "le frère", gender: "m", rule: "Signification: masculin.", colloc: ["mon frère", "un frère aîné", "chez mon frère", "le grand frère"] },
+            { word: "soeur", full: "la soeur", gender: "f", rule: "Signification: féminin.", colloc: ["ma soeur", "une petite soeur", "chez ma soeur", "la soeur de Paul"] },
             
-            // --- ДОМ ---
-            { word: "maison", article: "la", full: "la maison", gender: "f", rule: "База А1 (запомнить)", translation: "дом", topic: "Maison", collocs: ["à la maison", "rentrer à la maison", "une grande maison", "devant la maison"] },
-            { word: "appartement", article: "un", full: "un appartement", gender: "m", rule: "Суффикс -ment", translation: "квартира", topic: "Maison", collocs: ["louer un appartement", "mon appartement", "dans l'appartement", "petit appartement"] },
-            { word: "cuisine", article: "la", full: "la cuisine", gender: "f", rule: "Окончание -ine", translation: "кухня", topic: "Maison", collocs: ["faire la cuisine", "dans la cuisine", "cuisine moderne", "étagère de cuisine"] },
-            { word: "chambre", article: "la", full: "la chambre", gender: "f", rule: "Окончание -re", translation: "спальня", topic: "Maison", collocs: ["ma chambre", "chambre d'hôtel", "dans la chambre", "ranger la chambre"] },
-            { word: "salle", article: "la", full: "la salle", gender: "f", rule: "Окончание -lle", translation: "зал/комната", topic: "Maison", collocs: ["la salle de bain", "salle à manger", "dans la salle", "salle de classe"] },
-            { word: "étage", article: "le", full: "le étage", gender: "m", rule: "Суффикс -age", translation: "этаж", topic: "Maison", collocs: ["à l'étage", "premier étage", "quel étage ?", "monter à l'étage"] },
-            { word: "mur", article: "le", full: "le mur", gender: "m", rule: "Согласная в конце", translation: "стена", topic: "Maison", collocs: ["contre le mur", "sur le mur", "peindre le mur", "mur blanc"] },
-            { word: "jardin", article: "le", full: "le jardin", gender: "m", rule: "Окончание -in", translation: "сад", topic: "Maison", collocs: ["dans le jardin", "jardin public", "travailler au jardin", "petit jardin"] },
-            { word: "immeuble", article: "un", full: "un immeuble", gender: "m", rule: "Исключение к -е", translation: "здание", topic: "Maison", collocs: ["devant l'immeuble", "habiter l'immeuble", "un vieil immeuble", "entrer dans l'immeuble"] },
-            { word: "fenêtre", article: "la", full: "la fenêtre", gender: "f", rule: "Окончание -re", translation: "окно", topic: "Maison", collocs: ["par la fenêtre", "ouvrir la fenêtre", "près de la fenêtre", "regarder par la fenêtre"] },
-            { word: "porte", article: "la", full: "la porte", gender: "f", rule: "База А1", translation: "дверь", topic: "Maison", collocs: ["fermer la porte", "ouvrir la porte", "devant la porte", "derrière la porte"] },
-            { word: "chaise", article: "la", full: "la chaise", gender: "f", rule: "Окончание -se", translation: "стул", topic: "Maison", collocs: ["sur la chaise", "une chaise en bois", "s'asseoir sur la chaise", "prendre une chaise"] },
-            { word: "table", article: "la", full: "la table", gender: "f", rule: "Окончание -ble (чаще ж.р.)", translation: "стол", topic: "Maison", collocs: ["sur la table", "mettre la table", "autour de la table", "sous la table"] },
-            { word: "lit", article: "le", full: "le lit", gender: "m", rule: "Согласная в конце", translation: "кровать", topic: "Maison", collocs: ["dans le lit", "faire le lit", "sous le lit", "un grand lit"] },
+            // CITY & PLACES
+            { word: "ville", full: "la ville", gender: "f", rule: "Suffixe -ille (souvent f.).", colloc: ["en ville", "centre-ville", "grande ville", "aller en ville"] },
+            { word: "rue", full: "la rue", gender: "f", rule: "Suffixe -ue (f.).", colloc: ["dans la rue", "traverser la rue", "ma rue", "au bout de la rue"] },
+            { word: "maison", full: "la maison", gender: "f", rule: "Suffixe -on (mais féminin ici).", colloc: ["à la maison", "ma maison", "maison bleue", "devant la maison"] },
+            { word: "appartement", full: "l'appartement", gender: "m", rule: "Suffixe -ment (toujours m.).", colloc: ["un bel appartement", "louer un appartement", "dans l'appartement", "petit appartement"] },
+            { word: "bureau", full: "le bureau", gender: "m", rule: "Suffixe -eau (m.).", colloc: ["au bureau", "sur le bureau", "aller au bureau", "mon bureau"] },
+            { word: "cinéma", full: "le cinéma", gender: "m", rule: "Origine étrangère/abréviation.", colloc: ["au cinéma", "aller au cinéma", "film au cinéma", "devant le cinéma"] },
+            { word: "théâtre", full: "le théâtre", gender: "m", rule: "Suffixe -tre (souvent m.).", colloc: ["au théâtre", "aller au théâtre", "pièce de théâtre", "devant le théâtre"] },
+            { word: "musée", full: "le musée", gender: "m", rule: "Exception: -ée (souvent f., mais m. ici).", colloc: ["au musée", "visiter le musée", "entrée du musée", "musée d'art"] },
+            { word: "hôtel", full: "l'hôtel", gender: "m", rule: "Lieux publics (souvent m.).", colloc: ["à l'hôtel", "réserver un hôtel", "devant l'hôtel", "grand hôtel"] },
+            { word: "restaurant", full: "le restaurant", gender: "m", rule: "Suffixe -ant (souvent m.).", colloc: ["au restaurant", "choisir un restaurant", "aller au restaurant", "petit restaurant"] },
+            { word: "café", full: "le café", gender: "m", rule: "Suffixe -é (m.).", colloc: ["au café", "prendre un café", "garçon de café", "boire du café"] },
+            { word: "parc", full: "le parc", gender: "m", rule: "Nom court (souvent m.).", colloc: ["dans le parc", "aller au parc", "parc public", "au milieu du parc"] },
+            { word: "jardin", full: "le jardin", gender: "m", rule: "Suffixe -in (m.).", colloc: ["dans le jardin", "un beau jardin", "jardin public", "travailler au jardin"] },
+            { word: "école", full: "l'école", gender: "f", rule: "Exception courante.", colloc: ["à l'école", "aller à l'école", "école primaire", "devant l'école"] },
+            { word: "banque", full: "la banque", gender: "f", rule: "Suffixe -que (souvent f.).", colloc: ["à la banque", "compte en banque", "aller à la banque", "ma banque"] },
+            { word: "gare", full: "la gare", gender: "f", rule: "Suffixe -are (souvent f.).", colloc: ["à la gare", "devant la gare", "gare centrale", "aller à la gare"] },
+            { word: "aéroport", full: "l'aéroport", gender: "m", rule: "Suffixe -port (m.).", colloc: ["à l'aéroport", "aller à l'aéroport", "dans l'aéroport", "quitter l'aéroport"] },
+            { word: "pont", full: "le pont", gender: "m", rule: "Nom court masculin.", colloc: ["sur le pont", "sous le pont", "traverser le pont", "vieux pont"] },
 
-            // --- ГОРОД ---
-            { word: "ville", article: "la", full: "la ville", gender: "f", rule: "Окончание -ille", translation: "город", topic: "Ville", collocs: ["en ville", "centre-ville", "ma ville", "visiter la ville"] },
-            { word: "rue", article: "la", full: "la rue", gender: "f", rule: "Окончание -ue", translation: "улица", topic: "Ville", collocs: ["dans la rue", "traverser la rue", "au coin de la rue", "rue calme"] },
-            { word: "magasin", article: "le", full: "le magasin", gender: "m", rule: "Окончание -in", translation: "магазин", topic: "Ville", collocs: ["au magasin", "ouvrir le magasin", "dans le magasin", "un grand magasin"] },
-            { word: "musée", article: "le", full: "le musée", gender: "m", rule: "Исключение к -ée", translation: "музей", topic: "Ville", collocs: ["visiter le musée", "entrée du musée", "au musée", "musée d'art"] },
-            { word: "gare", article: "la", full: "la gare", gender: "f", rule: "Исключение", translation: "вокзал", topic: "Ville", collocs: ["à la gare", "gare du Nord", "devant la gare", "aller à la gare"] },
-            { word: "boulangerie", article: "la", full: "la boulangerie", gender: "f", rule: "Суффикс -erie", translation: "булочная", topic: "Ville", collocs: ["à la boulangerie", "aller à la boulangerie", "la boulangerie est ouverte", "devant la boulangerie"] },
-            { word: "parc", article: "le", full: "le parc", gender: "m", rule: "Согласная", translation: "парк", topic: "Ville", collocs: ["dans le parc", "parc public", "aller au parc", "un parc calme"] },
-            { word: "cinéma", article: "le", full: "le cinéma", gender: "m", rule: "Окончание -а", translation: "кино", topic: "Ville", collocs: ["au cinéma", "aller au cinéma", "devant le cinéma", "film au cinéma"] },
-            { word: "hôpital", article: "l'", full: "l'hôpital", gender: "m", rule: "Согласная", translation: "больница", topic: "Ville", collocs: ["à l'hôpital", "entrer à l'hôpital", "hôpital public", "devant l'hôpital"] },
-            { word: "banque", article: "la", full: "la banque", gender: "f", rule: "Окончание -que", translation: "банк", topic: "Ville", collocs: ["à la banque", "compte en banque", "entrer dans la banque", "chercher la banque"] },
-            { word: "pont", article: "le", full: "le pont", gender: "m", rule: "Согласная", translation: "мост", topic: "Ville", collocs: ["sur le pont", "traverser le pont", "sous le pont", "le pont de Paris"] },
-            { word: "place", article: "la", full: "la place", gender: "f", rule: "Окончание -ce", translation: "площадь", topic: "Ville", collocs: ["sur la place", "la place centrale", "aller à la place", "quelle place ?"] },
+            // FOOD & DRINK
+            { word: "pain", full: "le pain", gender: "m", rule: "Suffixe -ain (m.).", colloc: ["manger du pain", "baguette de pain", "pain frais", "avec du pain"] },
+            { word: "fromage", full: "le fromage", gender: "m", rule: "Suffixe -age (toujours m.).", colloc: ["du fromage", "plateau de fromages", "manger du fromage", "bon fromage"] },
+            { word: "vin", full: "le vin", gender: "m", rule: "Boisson alcoolisée (souvent m.).", colloc: ["boire du vin", "verre de vin", "vin rouge", "bouteille de vin"] },
+            { word: "bière", full: "la bière", gender: "f", rule: "Exception boisson.", colloc: ["une bière fraîche", "boire une bière", "verre de bière", "commander une bière"] },
+            { word: "eau", full: "l'eau", gender: "f", rule: "Exception -eau (souvent m. mais f. ici).", colloc: ["boire de l'eau", "bouteille d'eau", "eau minérale", "dans l'eau"] },
+            { word: "lait", full: "le lait", gender: "m", rule: "Nom court masculin.", colloc: ["boire du lait", "verre de lait", "lait chaud", "avec du lait"] },
+            { word: "viande", full: "la viande", gender: "f", rule: "Suffixe -ande (f.).", colloc: ["manger de la viande", "viande rouge", "plat de viande", "couper la viande"] },
+            { word: "poisson", full: "le poisson", gender: "m", rule: "Suffixe -on (m.).", colloc: ["manger du poisson", "poisson frais", "pêcher un poisson", "plat de poisson"] },
+            { word: "fruit", full: "le fruit", gender: "m", rule: "Suffixe -it (m.).", colloc: ["manger un fruit", "jus de fruit", "fruit frais", "salade de fruits"] },
+            { word: "légume", full: "le légume", gender: "m", rule: "Exception -e (souvent f. mais m. ici).", colloc: ["manger un légume", "légume vert", "soupe de légumes", "plat de légumes"] },
+            { word: "pomme", full: "la pomme", gender: "f", rule: "Fruit (souvent f.).", colloc: ["manger une pomme", "jus de pomme", "pomme rouge", "tarte aux pommes"] },
+            { word: "sel", full: "le sel", gender: "m", rule: "Minéral (m.).", colloc: ["mettre du sel", "trop de sel", "pincée de sel", "sans sel"] },
+            { word: "sucre", full: "le sucre", gender: "m", rule: "Suffixe -re (ici m.).", colloc: ["mettre du sucre", "sans sucre", "morceau de sucre", "trop de sucre"] },
+            { word: "oeuf", full: "un oeuf", gender: "m", rule: "Nom court masculin.", colloc: ["manger un oeuf", "boîte d'oeufs", "oeuf dur", "casser un oeuf"] },
+            { word: "riz", full: "le riz", gender: "m", rule: "Céréale (m.).", colloc: ["manger du riz", "riz blanc", "cuisiner le riz", "plat de riz"] },
 
-            // --- ЕДА ---
-            { word: "pain", article: "le", full: "le pain", gender: "m", rule: "База А1", translation: "хлеб", topic: "Nourriture", collocs: ["du pain", "manger du pain", "morceau de pain", "pain frais"] },
-            { word: "eau", article: "l'", full: "l'eau", gender: "f", rule: "Исключение", translation: "вода", topic: "Nourriture", collocs: ["boire de l'eau", "verre d'eau", "eau minérale", "bouteille d'eau"] },
-            { word: "viande", article: "la", full: "la viande", gender: "f", rule: "Окончание -ande", translation: "мясо", topic: "Nourriture", collocs: ["manger de la viande", "viande rouge", "avec de la viande", "cuire la viande"] },
-            { word: "pomme", article: "la", full: "la pomme", gender: "f", rule: "Окончание -е", translation: "яблоко", topic: "Nourriture", collocs: ["une pomme rouge", "manger une pomme", "jus de pomme", "tarte aux pommes"] },
-            { word: "fromage", article: "le", full: "le fromage", gender: "m", rule: "Суффикс -age", translation: "сыр", topic: "Nourriture", collocs: ["du fromage", "manger du fromage", "un morceau de fromage", "quel fromage ?"] },
-            { word: "café", article: "le", full: "le café", gender: "m", rule: "Напитки на -é", translation: "кофе", topic: "Nourriture", collocs: ["prendre un café", "café noir", "tasse de café", "avec du café"] },
-            { word: "thé", article: "le", full: "le thé", gender: "m", rule: "Напитки", translation: "чай", topic: "Nourriture", collocs: ["boire du thé", "tasse de thé", "thé vert", "un peu de thé"] },
-            { word: "sucre", article: "le", full: "le sucre", gender: "m", rule: "Исключение к -е", translation: "сахар", topic: "Nourriture", collocs: ["avec du sucre", "sans sucre", "morceau de sucre", "passer le sucre"] },
-            { word: "sel", article: "le", full: "le sel", gender: "m", rule: "Согласная", translation: "соль", topic: "Nourriture", collocs: ["mettre du sel", "le sel est sur la table", "sans sel", "un peu de sel"] },
-            { word: "œuf", article: "l'", full: "l'œuf", gender: "m", rule: "Согласная", translation: "яйцо", topic: "Nourriture", collocs: ["manger un œuf", "un œuf dur", "cuire l'œuf", "boîte d'œufs"] },
-            { word: "lait", article: "le", full: "le lait", gender: "m", rule: "Согласная", translation: "молоко", topic: "Nourriture", collocs: ["boire du lait", "verre de lait", "lait froid", "avec du lait"] },
+            // HOME & OBJECTS
+            { word: "table", full: "la table", gender: "f", rule: "Meuble (souvent f.).", colloc: ["sur la table", "mettre la table", "autour de la table", "grande table"] },
+            { word: "chaise", full: "la chaise", gender: "f", rule: "Suffixe -se (f.).", colloc: ["sur une chaise", "s'asseoir sur la chaise", "chaise en bois", "quatre chaises"] },
+            { word: "lit", full: "le lit", gender: "m", rule: "Meuble (m.).", colloc: ["dans le lit", "aller au lit", "faire le lit", "bord du lit"] },
+            { word: "porte", full: "la porte", gender: "f", rule: "Élément maison (f.).", colloc: ["ouvrir la porte", "derrière la porte", "devant la porte", "fermer la porte"] },
+            { word: "fenêtre", full: "la fenêtre", gender: "f", rule: "Élément maison (f.).", colloc: ["par la fenêtre", "ouvrir la fenêtre", "devant la fenêtre", "fermer la fenêtre"] },
+            { word: "téléphone", full: "le téléphone", gender: "m", rule: "Technologie -one (m.).", colloc: ["par téléphone", "sur le téléphone", "mon téléphone", "répondre au téléphone"] },
+            { word: "ordinateur", full: "l'ordinateur", gender: "m", rule: "Suffixe -eur (m. pour objets).", colloc: ["sur l'ordinateur", "mon ordinateur", "allumer l'ordinateur", "devant l'ordinateur"] },
+            { word: "livre", full: "le livre", gender: "m", rule: "Objet (m.).", colloc: ["lire un livre", "dans le livre", "ouvrir le livre", "mon livre"] },
+            { word: "journal", full: "le journal", gender: "m", rule: "Suffixe -al (m.).", colloc: ["lire le journal", "dans le journal", "journal local", "acheter le journal"] },
+            { word: "clé", full: "la clé", gender: "f", rule: "Exception courte (f.).", colloc: ["la clé de la porte", "perdre ses clés", "donner la clé", "trou de serrure"] },
 
-            // --- ТРАНСПОРТ ---
-            { word: "voiture", article: "la", full: "la voiture", gender: "f", rule: "Окончание -ure", translation: "машина", topic: "Transport", collocs: ["en voiture", "conduire la voiture", "la voiture de Paul", "ma voiture"] },
-            { word: "vélo", article: "le", full: "le vélo", gender: "m", rule: "Окончание -о", translation: "велосипед", topic: "Transport", collocs: ["faire du vélo", "à vélo", "mon vélo", "monter à vélo"] },
-            { word: "bus", article: "le", full: "le bus", gender: "m", rule: "Согласная", translation: "автобус", topic: "Transport", collocs: ["prendre le bus", "arrêt de bus", "dans le bus", "monter dans le bus"] },
-            { word: "train", article: "le", full: "le train", gender: "m", rule: "Согласная", translation: "поезд", topic: "Transport", collocs: ["en train", "billet de train", "voyager en train", "prendre le train"] },
-            { word: "avion", article: "l'", full: "l'avion", gender: "m", rule: "Исключение к -ion", translation: "самолет", topic: "Transport", collocs: ["prendre l'avion", "voyager en avion", "l'avion décolle", "dans l'avion"] },
-            { word: "moto", article: "la", full: "la moto", gender: "f", rule: "Исключение к -о", translation: "мотоцикл", topic: "Transport", collocs: ["à moto", "faire de la moto", "quelle moto ?", "ma moto"] },
-            { word: "bateau", article: "le", full: "le bateau", gender: "m", rule: "Окончание -eau", translation: "лодка/корабль", topic: "Transport", collocs: ["en bateau", "voyager en bateau", "monter sur le bateau", "le petit bateau"] },
+            // TRANSPORT & TRAVEL
+            { word: "voiture", full: "la voiture", gender: "f", rule: "Suffixe -ure (f.).", colloc: ["en voiture", "conduire une voiture", "ma voiture", "dans la voiture"] },
+            { word: "bus", full: "le bus", gender: "m", rule: "Moyen de transport (m.).", colloc: ["prendre le bus", "dans le bus", "arrêt de bus", "aller en bus"] },
+            { word: "train", full: "le train", gender: "m", rule: "Moyen de transport (m.).", colloc: ["prendre le train", "dans le train", "aller en train", "voyager en train"] },
+            { word: "vélo", full: "le vélo", gender: "m", rule: "Moyen de transport (m.).", colloc: ["faire du vélo", "à vélo", "mon vélo", "monter à vélo"] },
+            { word: "avion", full: "l'avion", gender: "m", rule: "Suffixe -on (m.).", colloc: ["en avion", "prendre l'avion", "dans l'avion", "voyager en avion"] },
+            { word: "bateau", full: "le bateau", gender: "m", rule: "Suffixe -eau (m.).", colloc: ["en bateau", "sur le bateau", "monter sur le bateau", "prendre le bateau"] },
+            { word: "voyage", full: "le voyage", gender: "m", rule: "Suffixe -age (m.).", colloc: ["bon voyage", "faire un voyage", "pendant le voyage", "voyage d'affaires"] },
+            { word: "vacances", full: "les vacances", gender: "f", rule: "Toujours pluriel (f.).", colloc: ["en vacances", "bonnes vacances", "pendant les vacances", "aller en vacances"] },
+            { word: "billet", full: "le billet", gender: "m", rule: "Suffixe -et (m.).", colloc: ["un billet de train", "acheter un billet", "billet d'avion", "montrer son billet"] },
+            { word: "valise", full: "la valise", gender: "f", rule: "Suffixe -se (f.).", colloc: ["faire sa valise", "ma valise", "porter une valise", "dans la valise"] },
 
-            // --- РАБОТА И УЧЕБА ---
-            { word: "école", article: "l'", full: "l'école", gender: "f", rule: "Окончание -ole", translation: "школа", topic: "Études", collocs: ["à l'école", "aller à l'école", "école primaire", "devant l'école"] },
-            { word: "livre", article: "le", full: "le livre", gender: "m", rule: "Исключение к -е", translation: "книга", topic: "Études", collocs: ["lire un livre", "livre de français", "ouvrir le livre", "un vieux livre"] },
-            { word: "ordinateur", article: "l'", full: "l'ordinateur", gender: "m", rule: "Окончание -eur (предмет)", translation: "компьютер", topic: "Travail", collocs: ["mon ordinateur", "sur l'ordinateur", "allumer l'ordinateur", "ordinateur portable"] },
-            { word: "bureau", article: "le", full: "le bureau", gender: "m", rule: "Окончание -eau", translation: "офис/стол", topic: "Travail", collocs: ["au bureau", "travailler au bureau", "mon bureau", "dans le bureau"] },
-            { word: "travail", article: "le", full: "le travail", gender: "m", rule: "Окончание -ail", translation: "работа", topic: "Travail", collocs: ["au travail", "chercher du travail", "mon travail", "pendant le travail"] },
-            { word: "cahier", article: "le", full: "le cahier", gender: "m", rule: "Окончание -ier", translation: "тетрадь", topic: "Études", collocs: ["dans le cahier", "un nouveau cahier", "écrire dans le cahier", "mon cahier"] },
-            { word: "stylo", article: "le", full: "le stylo", gender: "m", rule: "Окончание -о", translation: "ручка", topic: "Études", collocs: ["écrire au stylo", "mon stylo", "chercher un stylo", "bleu comme le stylo"] },
-            { word: "langue", article: "la", full: "la langue", gender: "f", rule: "Окончание -gue", translation: "язык", topic: "Études", collocs: ["la langue française", "apprendre une langue", "quelle langue ?", "langue maternelle"] },
+            // CLOTHES
+            { word: "vêtement", full: "le vêtement", gender: "m", rule: "Suffixe -ment (m.).", colloc: ["un beau vêtement", "changer de vêtements", "magasin de vêtements", "choisir un vêtement"] },
+            { word: "pantalon", full: "le pantalon", gender: "m", rule: "Suffixe -on (m.).", colloc: ["mettre un pantalon", "mon pantalon", "pantalon noir", "en pantalon"] },
+            { word: "chemise", full: "la chemise", gender: "f", rule: "Suffixe -se (f.).", colloc: ["une chemise blanche", "mettre sa chemise", "porter une chemise", "ma chemise"] },
+            { word: "robe", full: "la robe", gender: "f", rule: "Vêtement femme (f.).", colloc: ["une belle robe", "porter une robe", "robe de soirée", "en robe"] },
+            { word: "chaussure", full: "la chaussure", gender: "f", rule: "Suffixe -ure (f.).", colloc: ["mettre ses chaussures", "paire de chaussures", "chaussures neuves", "en chaussures"] },
+            { word: "chapeau", full: "le chapeau", gender: "m", rule: "Suffixe -eau (m.).", colloc: ["porter un chapeau", "sur le chapeau", "mon chapeau", "enlever son chapeau"] },
+            { word: "sac", full: "le sac", gender: "m", rule: "Nom court masculin.", colloc: ["dans le sac", "mon sac", "sac à dos", "porter un sac"] },
 
-            // --- ПРИРОДА ---
-            { word: "mer", article: "la", full: "la mer", gender: "f", rule: "Исключение", translation: "море", topic: "Nature", collocs: ["à la mer", "bord de la mer", "la mer bleue", "regarder la mer"] },
-            { word: "soleil", article: "le", full: "le soleil", gender: "m", rule: "Окончание -eil", translation: "солнце", topic: "Nature", collocs: ["au soleil", "le soleil brille", "sous le soleil", "lever du soleil"] },
-            { word: "pluie", article: "la", full: "la pluie", gender: "f", rule: "Окончание -ie", translation: "дождь", topic: "Nature", collocs: ["sous la pluie", "il y a de la pluie", "marcher sous la pluie", "quelle pluie !"] },
-            { word: "fleur", article: "la", full: "la fleur", gender: "f", rule: "Исключение к -eur", translation: "цветок", topic: "Nature", collocs: ["une jolie fleur", "offrir une fleur", "quelle fleur ?", "sentir la fleur"] },
-            { word: "arbre", article: "le", full: "le arbre", gender: "m", rule: "Исключение к -е", translation: "дерево", topic: "Nature", collocs: ["sous un arbre", "monter à l'arbre", "un grand arbre", "feuille d'arbre"] },
-            { word: "ciel", article: "le", full: "le ciel", gender: "m", rule: "Согласная", translation: "небо", topic: "Nature", collocs: ["dans le ciel", "le ciel bleu", "regarder le ciel", "sous le ciel"] },
+            // NATURE & TIME
+            { word: "soleil", full: "le soleil", gender: "m", rule: "Astre (m.).", colloc: ["au soleil", "sous le soleil", "lever du soleil", "il y a du soleil"] },
+            { word: "pluie", full: "la pluie", gender: "f", rule: "Météo (f.).", colloc: ["sous la pluie", "il y a de la pluie", "pendant la pluie", "après la pluie"] },
+            { word: "ciel", full: "le ciel", gender: "m", rule: "Nature (m.).", colloc: ["dans le ciel", "ciel bleu", "regarder le ciel", "sous le ciel"] },
+            { word: "mer", full: "la mer", gender: "f", rule: "Nature (f.).", colloc: ["au bord de la mer", "dans la mer", "regarder la mer", "aller à la mer"] },
+            { word: "montagne", full: "la montagne", gender: "f", rule: "Suffixe -gne (f.).", colloc: ["à la montagne", "en montagne", "la haute montagne", "aller à la montagne"] },
+            { word: "fleur", full: "la fleur", gender: "f", rule: "Suffixe -eur (f. pour plantes).", colloc: ["une belle fleur", "offrir des fleurs", "bouquet de fleurs", "sentir la fleur"] },
+            { word: "arbre", full: "l'arbre", gender: "m", rule: "Plante (m.).", colloc: ["sous l'arbre", "un grand arbre", "monter sur l'arbre", "devant l'arbre"] },
+            { word: "temps", full: "le temps", gender: "m", rule: "Météo/Durée (m.).", colloc: ["quel temps fait-il ?", "avoir le temps", "perdre son temps", "avec le temps"] },
+            { word: "heure", full: "l'heure", gender: "f", rule: "Unité temps (f.).", colloc: ["quelle heure est-il ?", "à l'heure", "une heure", "pendant une heure"] },
+            { word: "jour", full: "le jour", gender: "m", rule: "Unité temps (m.).", colloc: ["chaque jour", "le jour même", "tous les jours", "un beau jour"] },
+            { word: "semaine", full: "la semaine", gender: "f", rule: "Unité temps (f.).", colloc: ["chaque semaine", "la semaine prochaine", "pendant la semaine", "toute la semaine"] },
+            { word: "mois", full: "le mois", gender: "m", rule: "Unité temps (m.).", colloc: ["chaque mois", "le mois prochain", "pendant le mois", "tous les mois"] },
+            { word: "année", full: "l'année", gender: "f", rule: "Suffixe -ée (f.).", colloc: ["chaque année", "l'année dernière", "pendant l'année", "toute l'année"] },
+            { word: "matin", full: "le matin", gender: "m", rule: "Moment journée (m.).", colloc: ["le matin", "chaque matin", "demain matin", "tôt le matin"] },
+            { word: "soir", full: "le soir", gender: "m", rule: "Moment journée (m.).", colloc: ["le soir", "chaque soir", "ce soir", "tard le soir"] },
+            { word: "nuit", full: "la nuit", gender: "f", rule: "Moment journée (f.).", colloc: ["bonne nuit", "pendant la nuit", "toute la nuit", "cette nuit"] },
 
-            // --- АБСТРАКТНОЕ ---
-            { word: "problème", article: "le", full: "le problème", gender: "m", rule: "Греч. корень -ème", translation: "проблема", topic: "Abstrait", collocs: ["avoir un problème", "régler le problème", "pas de problème", "un gros problème"] },
-            { word: "idée", article: "l'", full: "l'idée", gender: "f", rule: "Окончание -ée", translation: "идея", topic: "Abstrait", collocs: ["une bonne idée", "avoir une idée", "parler d'une idée", "l'idée du projet"] },
-            { word: "question", article: "la", full: "la question", gender: "f", rule: "Суффикс -tion", translation: "вопрос", topic: "Abstrait", collocs: ["poser une question", "répondre à la question", "une question simple", "quelle question ?"] },
-            { word: "chose", article: "la", full: "la chose", gender: "f", rule: "База А1", translation: "вещь", topic: "Abstrait", collocs: ["une chose simple", "penser à une chose", "la chose importante", "quelle chose ?"] },
-            { word: "vie", article: "la", full: "la vie", gender: "f", rule: "Окончание -ie", translation: "жизнь", topic: "Abstrait", collocs: ["la vie est belle", "changer de vie", "dans la vie", "vie de famille"] },
-            { word: "temps", article: "le", full: "le temps", gender: "m", rule: "Согласная -s", translation: "время", topic: "Abstrait", collocs: ["avoir le temps", "perdre son temps", "quel temps fait-il ?", "pendant ce temps"] },
-            { word: "réponse", article: "la", full: "la response", gender: "f", rule: "Окончание -se", translation: "ответ", topic: "Abstrait", collocs: ["donner une réponse", "sans réponse", "quelle réponse ?", "réponse correcte"] },
-            { word: "situation", article: "la", full: "la situation", gender: "f", rule: "Суффикс -tion", translation: "ситуация", topic: "Abstrait", collocs: ["dans cette situation", "parler de la situation", "une situation difficile", "analyser la situation"] },
-            { word: "moment", article: "le", full: "le moment", gender: "m", rule: "Суффикс -ment", translation: "момент", topic: "Abstrait", collocs: ["en ce moment", "un bon moment", "quel moment ?", "le moment est venu"] },
-            { word: "nom", article: "le", full: "le nom", gender: "m", rule: "Согласная", translation: "имя/фамилия", topic: "Abstrait", collocs: ["mon nom", "nom de famille", "donner son nom", "quel est ton nom ?"] }
+            // ABSTRACT & OTHERS
+            { word: "travail", full: "le travail", gender: "m", rule: "Suffixe -ail (m.).", colloc: ["au travail", "chercher du travail", "finir le travail", "bon travail"] },
+            { word: "argent", full: "l'argent", gender: "m", rule: "Nom masculin (m.).", colloc: ["avoir de l'argent", "gagner de l'argent", "manquer d'argent", "donner de l'argent"] },
+            { word: "problème", full: "le problème", gender: "m", rule: "Origine grecque -ème (m.).", colloc: ["avoir un problème", "régler un problème", "pas de problème", "quel problème ?"] },
+            { word: "question", full: "la question", gender: "f", rule: "Suffixe -tion (f.).", colloc: ["poser une question", "répondre à la question", "une bonne question", "sans question"] },
+            { word: "réponse", full: "la réponse", gender: "f", rule: "Suffixe -se (f.).", colloc: ["donner une réponse", "sans réponse", "réponse correcte", "attendre une réponse"] },
+            { word: "idée", full: "l'idée", gender: "f", rule: "Suffixe -ée (f.).", colloc: ["une bonne idée", "avoir une idée", "c'est mon idée", "changer d'idée"] },
+            { word: "chose", full: "la chose", gender: "f", rule: "Nom féminin (f.).", colloc: ["une chose simple", "la chose importante", "penser à une chose", "dire quelque chose"] },
+            { word: "situation", full: "la situation", gender: "f", rule: "Suffixe -tion (f.).", colloc: ["situation difficile", "dans cette situation", "étudier la situation", "bonne situation"] },
+            { word: "vie", full: "la vie", gender: "f", rule: "Suffixe -ie (f.).", colloc: ["la vie quotidienne", "vie de famille", "dans la vie", "changer de vie"] },
+            { word: "monde", full: "le monde", gender: "m", rule: "Exception -e (m.).", colloc: ["tout le monde", "dans le monde", "tour du monde", "monde entier"] }
         ];
 
-        let state = {
-            screen: 'menu',
-            currentWord: null,
-            score: { correct: 0, wrong: 0 },
-            timer: 0,
-            interval: null,
-            cloudWords: []
+        let mode = 'home';
+        let currentIdx = 0;
+        let cloudData = [];
+        let selectedCloudId = null;
+        let timer = null;
+        let seconds = 60;
+        let configTime = 60;
+
+        const views = ['home', 'settings', 'basic', 'cloud'];
+        const modal = document.getElementById('modal-feedback');
+
+        function showView(viewName) {
+            views.forEach(v => document.getElementById('screen-' + v).classList.add('hidden-el'));
+            document.getElementById('screen-' + viewName).classList.remove('hidden-el');
+            document.getElementById('btn-menu').classList.toggle('hidden-el', viewName === 'home');
+            mode = viewName;
+        }
+
+        document.getElementById('btn-menu').onclick = () => {
+            clearInterval(timer);
+            showView('home');
         };
 
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            state.screen = id;
+        function initBasic() {
+            showView('basic');
+            currentIdx = Math.floor(Math.random() * db.length);
+            updateBasicUI();
         }
 
-        function exitGame() {
-            clearInterval(state.interval);
-            showScreen('menu-screen');
+        function updateBasicUI() {
+            document.getElementById('basic-word-box').textContent = db[currentIdx].word;
         }
 
-        /* --- BASIC MODE --- */
-        function startBasic() {
-            state.score = { correct: 0, wrong: 0 };
-            updateBasicScore();
-            showScreen('game-screen');
-            nextWord();
+        function submitBasic(gender) {
+            const word = db[currentIdx];
+            showFeedback(gender === word.gender, word, () => {
+                modal.classList.add('hidden-el');
+                initBasic();
+            });
         }
 
-        function updateBasicScore() {
-            document.getElementById('score-display').innerText = `LE: ${state.score.correct} | LA: ${state.score.wrong}`;
-        }
+        const qtyRange = document.getElementById('cloud-qty');
+        qtyRange.oninput = (e) => {
+            document.getElementById('qty-val').textContent = e.target.value;
+        };
 
-        function nextWord() {
-            document.getElementById('feedback-modal').style.display = 'none';
-            const idx = Math.floor(Math.random() * allWords.length);
-            state.currentWord = allWords[idx];
-            document.getElementById('word-text').innerText = state.currentWord.word;
-            document.getElementById('word-topic').innerText = state.currentWord.topic;
-        }
+        function showSettings() { showView('settings'); }
 
-        function checkAnswer(gender) {
-            const isCorrect = state.currentWord.gender === gender;
-            const header = document.getElementById('modal-header');
-            
-            if (isCorrect) {
-                state.score.correct++;
-                header.innerText = "C'est correct !";
-                header.className = "modal-header correct";
-            } else {
-                state.score.wrong++;
-                header.innerText = "Faux !";
-                header.className = "modal-header wrong";
-            }
-
-            document.getElementById('modal-word').innerText = state.currentWord.full;
-            document.getElementById('modal-trans').innerText = state.currentWord.translation;
-            document.getElementById('modal-rule').innerText = state.currentWord.rule;
-            
-            const collocsDiv = document.getElementById('modal-collocs');
-            collocsDiv.innerHTML = state.currentWord.collocs.map(c => `<div class="colloc-item">${c}</div>`).join('');
-
-            updateBasicScore();
-            document.getElementById('feedback-modal').style.display = 'flex';
-        }
-
-        /* --- CLOUD MODE --- */
-        let activeCloudWordId = null;
-
-        function openCloudSettings() {
-            showScreen('cloud-settings-screen');
+        function setTimer(v) {
+            configTime = v;
+            document.querySelectorAll('.t-btn').forEach(b => {
+                b.classList.remove('bg-red-500', 'border-red-500', 'text-white');
+                if(parseInt(b.dataset.t) === v) b.classList.add('bg-red-500', 'border-red-500', 'text-white');
+            });
         }
 
         function startCloud() {
-            const countInput = parseInt(document.getElementById('cloud-word-count').value);
-            // Ensure we don't request more than available
-            const count = Math.min(countInput, allWords.length);
-            
-            state.timer = parseInt(document.getElementById('cloud-timer-val').value);
-            
-            state.cloudWords = [...allWords].sort(() => 0.5 - Math.random()).slice(0, count);
+            showView('cloud');
+            const qty = parseInt(qtyRange.value);
+            cloudData = [...db].sort(() => 0.5 - Math.random()).slice(0, qty).map((item, index) => ({
+                ...item, userGender: null, state: 'pending', uniqueId: index
+            }));
+            seconds = configTime;
+            selectedCloudId = null;
+            document.getElementById('col-le').innerHTML = '<div class="text-[9px] font-black text-blue-500 uppercase text-center mb-1">LE</div>';
+            document.getElementById('col-la').innerHTML = '<div class="text-[9px] font-black text-red-500 uppercase text-center mb-1">LA</div>';
             renderCloud();
-            showScreen('cloud-screen');
             startTimer();
-        }
-
-        function startTimer() {
-            clearInterval(state.interval);
-            document.getElementById('timer').innerText = state.timer;
-            state.interval = setInterval(() => {
-                state.timer--;
-                document.getElementById('timer').innerText = state.timer;
-                if (state.timer <= 0) {
-                    clearInterval(state.interval);
-                    alert("Temps écoulé !");
-                    exitGame();
-                }
-            }, 1000);
         }
 
         function renderCloud() {
             const container = document.getElementById('cloud-container');
             container.innerHTML = '';
-            state.cloudWords.forEach((w, i) => {
-                const div = document.createElement('div');
-                div.className = 'cloud-word';
-                div.innerText = w.word;
-                div.onclick = () => selectCloudWord(i, div);
-                container.appendChild(div);
+            cloudData.forEach(item => {
+                if (item.state !== 'pending') return;
+                const el = document.createElement('div');
+                el.className = `cloud-item absolute p-2 px-3 bg-white shadow rounded-xl font-bold text-slate-700 border border-slate-100 text-[11px]`;
+                el.textContent = item.word;
+                el.style.left = (Math.random() * 65 + 5) + '%';
+                el.style.top = (Math.random() * 75 + 5) + '%';
+                el.onclick = () => {
+                    document.querySelectorAll('.cloud-item').forEach(x => x.classList.remove('word-selected'));
+                    el.classList.add('word-selected');
+                    selectedCloudId = item.uniqueId;
+                };
+                container.appendChild(el);
             });
         }
 
-        function selectCloudWord(index, element) {
-            document.querySelectorAll('.cloud-word').forEach(w => w.style.borderColor = '#e2e8f0');
-            element.style.borderColor = "var(--blue)";
-            activeCloudWordId = index;
+        function assignTo(gender) {
+            if (selectedCloudId === null) return;
+            const item = cloudData.find(i => i.uniqueId === selectedCloudId);
+            const chosenGender = gender === 'le' ? 'm' : 'f';
+            item.userGender = chosenGender;
+            item.state = 'done';
+            
+            const isCorrect = chosenGender === item.gender;
+            const targetCol = gender === 'le' ? 'col-le' : 'col-la';
+            const colEl = document.getElementById(targetCol);
+            
+            const entry = document.createElement('div');
+            entry.className = `text-[10px] font-bold p-1.5 border rounded-lg shadow-sm text-center animate-in slide-in-from-top-1 duration-200 cursor-pointer ${isCorrect ? 'entry-correct' : 'entry-wrong'}`;
+            entry.textContent = item.word;
+            entry.onclick = () => showDetail(item.uniqueId);
+            colEl.prepend(entry); // New words at top
+
+            selectedCloudId = null;
+            renderCloud();
+            if (cloudData.every(i => i.state === 'done')) stopTimer();
         }
 
-        function handleCloudChoice(gender) {
-            if (activeCloudWordId === null) return;
-            const word = state.cloudWords[activeCloudWordId];
-            
-            if (word.gender === gender) {
-                state.cloudWords.splice(activeCloudWordId, 1);
-                activeCloudWordId = null;
-                renderCloud();
-                if (state.cloudWords.length === 0) {
-                    clearInterval(state.interval);
-                    alert("Bravo ! Vous avez terminé !");
-                    exitGame();
-                }
-            } else {
-                // Short flash or visual cue could be here instead of alert for better UX
-                alert(`Erreur ! ${word.full.toUpperCase()} (${word.translation})`);
-            }
+        function startTimer() {
+            const display = document.getElementById('timer-text');
+            display.classList.remove('timer-urgent');
+            clearInterval(timer);
+            timer = setInterval(() => {
+                seconds--;
+                if (seconds < 0) { stopTimer(); return; }
+                let m = Math.floor(seconds / 60);
+                let s = seconds % 60;
+                display.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if (seconds <= 5) display.classList.add('timer-urgent');
+            }, 1000);
         }
+
+        function stopTimer() {
+            clearInterval(timer);
+            showResults();
+        }
+
+        function showResults() {
+            const container = document.getElementById('cloud-container');
+            const correctCount = cloudData.filter(i => i.state === 'done' && i.userGender === i.gender).length;
+            const total = cloudData.length;
+            
+            container.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center p-4 text-center space-y-3">
+                    <h2 class="text-2xl font-black text-slate-800 uppercase">Fini !</h2>
+                    <div class="bg-white p-3 rounded-xl shadow-inner border border-slate-100">
+                        <span class="text-3xl font-black text-blue-600">${correctCount}</span>
+                        <span class="text-lg text-slate-300">/ ${total}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-bold">Cliquez sur les mots pour réviser</p>
+                    <button onclick="startCloud()" class="px-8 py-2 bg-red-500 text-white font-black rounded-full shadow-lg">Encore !</button>
+                </div>
+            `;
+        }
+
+        window.showDetail = (uId) => {
+            const item = cloudData.find(i => i.uniqueId === uId);
+            if(!item) return;
+            showFeedback(item.userGender === item.gender, item, () => modal.classList.add('hidden-el'));
+        };
+
+        function showFeedback(correct, word, nextFn) {
+            document.getElementById('modal-header').textContent = correct ? "C'EST ÇA ! ✅" : "OUPS... ❌";
+            document.getElementById('modal-header').className = `p-4 text-center text-white font-black text-xl ${correct ? 'bg-green-500' : 'bg-red-600'}`;
+            document.getElementById('modal-word').textContent = word.full;
+            document.getElementById('modal-rule').textContent = word.rule;
+            document.getElementById('modal-colloc').innerHTML = word.colloc.map(c => `<span>• ${c}</span>`).join('');
+            document.getElementById('modal-next').onclick = nextFn;
+            modal.classList.remove('hidden-el');
+        }
+
+        showView('home');
     </script>
 </body>
 </html>
